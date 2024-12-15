@@ -16,8 +16,8 @@
 import type { PropType, CSSProperties } from 'vue'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { v4 } from 'uuid'
-import type { TConnectorPointModes, TConnectorPointTypes } from '@/composables/types'
 import { useConnectorPoint } from '@/composables/ConnectorPoint'
+import type { TConnectorPointTypeValues } from '@/composables/types'
 
 const props = defineProps({
   id: {
@@ -26,12 +26,17 @@ const props = defineProps({
     required: false,
   },
   type: {
-    type: String as PropType<TConnectorPointTypes>,
+    type: String as PropType<TConnectorPointTypeValues>,
     required: true,
   },
-  mode: {
-    type: String as PropType<TConnectorPointModes>,
-    default: 'free',
+  incomingConnection: {
+    type: Boolean,
+    default: true,
+    required: false,
+  },
+  outgoingConnection: {
+    type: Boolean,
+    default: true,
     required: false,
   },
   style: {
@@ -50,7 +55,8 @@ const pointRef = ref()
 const connectorPoint = useConnectorPoint({
   id: props.id,
   type: props.type,
-  mode: props.mode,
+  incomingConnection: props.incomingConnection,
+  outgoingConnection: props.outgoingConnection,
 })
 
 onMounted(() => {

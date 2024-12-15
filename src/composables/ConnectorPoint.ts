@@ -4,14 +4,20 @@ import { containerRef } from '@/composables/index'
 import type { TuseConnectorPointOptions } from '@/composables/types'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
+import { useConnectorCreator } from './ConnectorCreator'
 
 export function useConnectorPoint(data: TuseConnectorPointOptions) {
   const EE = useEventEmitter().getEventEmitter()
+  const connectorCreator = useConnectorCreator()
   const connectorPointElement: Ref<HTMLDivElement> = ref()
-  const options = ref(data)
+  const options: Ref<TuseConnectorPointOptions> = ref(data)
 
   function getConnectorPointElement() {
     return connectorPointElement.value
+  }
+
+  function getOptions() {
+    return options.value
   }
 
   function setConnectorPointElement(value: HTMLDivElement) {
@@ -20,6 +26,10 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
 
   function mouseDown() {
     console.log('mouseDown')
+    connectorCreator.startDrawing({
+      ref: connectorPointElement.value,
+      ...getOptions(),
+    })
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
@@ -51,6 +61,7 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
   }
 
   return {
+    getOptions,
     getConnectorPointElement,
     setConnectorPointElement,
     mouseDown,

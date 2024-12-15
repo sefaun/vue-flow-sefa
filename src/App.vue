@@ -2,10 +2,8 @@
   <Container :class="'w-full h-screen bg-slate-400'">
     <Flow :nodes="nodes" :connectors="connectors">
       <template #node="{ data }">
-        <Node :data="data">
-          <NodeA v-if="data.type == 'a'" :data="data"></NodeA>
-          <NodeB v-if="data.type == 'b'" :data="data"></NodeB>
-        </Node>
+        <NodeA v-if="data.type == 'a'" :data="data"></NodeA>
+        <NodeB v-if="data.type == 'b'" :data="data"></NodeB>
       </template>
       <template #connector="{ data }">
         <Connector :data="data"></Connector>
@@ -20,7 +18,6 @@ import { ref } from 'vue'
 import { v4 } from 'uuid'
 import Container from '@/components/Container.vue'
 import Flow from '@/components/Flow.vue'
-import Node from '@/components/Node.vue'
 import Connector from '@/components/Connector.vue'
 import { TNode } from '@/composables/types'
 import NodeA from './NodeA.vue'

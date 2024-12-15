@@ -12,7 +12,7 @@ export function useConnector(opts: any) {
     connectorElement.value = value
   }
 
-  function click(event: MouseEvent) {
+  function click(_event: MouseEvent) {
     console.log('click')
   }
 

@@ -1,3 +1,4 @@
+import { connectorPointType } from '@/composables/enums'
 import { nodeEvents } from '@/composables/nodeEvents'
 
 export type ValueOf<T> = T[keyof T]
@@ -33,10 +34,14 @@ export type TNodeEventMessage<T> = T
 
 export type TNodeEventListenerData = TNodeZIndexMessage
 
-export type TConnectorPointTypes = 'input' | 'output'
-export type TConnectorPointModes = 'free' | 'input2output' | 'output2input' | 'input2input' | 'output2output'
+export type TConnectorPointTypeValues = ValueOf<typeof connectorPointType>
 export type TuseConnectorPointOptions = {
   id: string
-  type: TConnectorPointTypes
-  mode: TConnectorPointModes
+  type: TConnectorPointTypeValues
+  incomingConnection: boolean
+  outgoingConnection: boolean
+}
+
+export type TuseConnectorCreatorConnectorOptions = TuseConnectorPointOptions & {
+  ref: HTMLDivElement
 }

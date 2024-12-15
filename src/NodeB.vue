@@ -2,11 +2,11 @@
   <div class="absolute w-[200px] h-[200px] bg-blue-500">
     <div class="flex">
       <div>
-        <ConnectorPoint type="input"></ConnectorPoint>
+        <ConnectorPoint type="input" :outgoing-connection="false"></ConnectorPoint>
       </div>
       <div>{{ props.data.id }}</div>
       <div>
-        <ConnectorPoint type="output"></ConnectorPoint>
+        <ConnectorPoint type="output" :incoming-connection="false"></ConnectorPoint>
       </div>
     </div>
   </div>
