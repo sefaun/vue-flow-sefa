@@ -24,8 +24,9 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
     connectorPointElement.value = value
   }
 
-  function mouseDown() {
+  function mouseDown(_event: MouseEvent) {
     console.log('mouseDown')
+    connectorCreator.start()
     connectorCreator.startDrawing({
       ref: connectorPointElement.value,
       ...getOptions(),
@@ -33,15 +34,22 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
-  function mouseMove() {}
+  function mouseMove(event: MouseEvent) {
+    event.preventDefault()
+    // options.value.position.x = event.clientX - moveStarting.x
+    // options.value.position.y = event.clientY - moveStarting.y
+  }
 
-  function mouseUp() {
+  function mouseUp(_event: MouseEvent) {
     console.log('mouseUp')
     containerRef.value.removeEventListener('mousemove', mouseMove)
+    connectorCreator.destroy()
   }
 
   function groundMouseUp() {
     containerRef.value.removeEventListener('mousemove', mouseMove)
+    connectorCreator.destroy()
+    console.log('mouseUp2')
   }
 
   function startEmitterListener() {

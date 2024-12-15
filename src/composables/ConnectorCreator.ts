@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
+import { useEventEmitter } from '@/composables/EventEmitter'
+import { emitterEvents } from '@/composables/emitterEvents'
 import type { TuseConnectorCreatorConnectorOptions } from '@/composables/types'
 
 const startingPoints = {
@@ -23,6 +25,8 @@ const points = ref(cloneDeep(startingPoints))
 const drawingStatus = ref(false)
 
 export function useConnectorCreator() {
+  const EE = useEventEmitter().getEventEmitter()
+
   function getPoints() {
     return points.value
   }
@@ -32,7 +36,6 @@ export function useConnectorCreator() {
   }
 
   function startDrawing(value: TuseConnectorCreatorConnectorOptions) {
-    resetPoints()
     points.value.start = cloneDeep(value)
     if (!points.value.start.outgoingConnection) {
       return
@@ -63,11 +66,34 @@ export function useConnectorCreator() {
     points.value = cloneDeep(startingPoints)
   }
 
+  function groundMouseUp() {
+    setDrawingStatus(false)
+  }
+
+  function startEmitterListener() {
+    EE.on(emitterEvents.container.groundMouseUp, groundMouseUp)
+  }
+
+  function destroyEmitterListener() {
+    EE.removeListener(emitterEvents.container.groundMouseUp, groundMouseUp)
+  }
+
+  function start() {
+    resetPoints()
+    startEmitterListener()
+  }
+
+  function destroy() {
+    destroyEmitterListener()
+  }
+
   return {
     getPoints,
     getDrawingStatus,
     setDrawingStatus,
     startDrawing,
     endDrawing,
+    start,
+    destroy,
   }
 }
