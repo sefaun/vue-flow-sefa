@@ -1,6 +1,6 @@
 <template>
   <div ref="flowRef" class="w-full h-full">
-    <Node v-for="node of props.nodes" :key="node.id" :data="node">
+    <Node v-for="node of flow.getNodes()" :key="node.id" :data="node">
       <slot name="node" v-bind="{ data: node }"></slot>
     </Node>
     <svg width="100%" height="100%" class="pointer-events-none">
@@ -40,7 +40,7 @@
         stroke-dasharray="15,5"
         marker-end="url(#thinker-drawing-end)"
       ></path>
-      <g v-for="connector of props.connectors" :key="connector.id" class="pointer-events-none">
+      <g v-for="connector of flow.getConnectors()" :key="connector.id" class="pointer-events-none">
         <slot name="connector" v-bind="{ data: connector }"></slot>
       </g>
     </svg>
@@ -49,7 +49,9 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import { cloneDeep } from 'lodash'
 import { flowRef, connectorDrawingRef } from '@/composables/index'
+import { useFlow } from '@/composables/Flow'
 import { useConnectorCreator } from '@/composables/ConnectorCreator'
 import type { TNode } from '@/composables/types'
 import Node from '@/components/Node.vue'
@@ -65,5 +67,9 @@ const props = defineProps({
   },
 })
 
+const flow = useFlow()
 const connectorCreator = useConnectorCreator()
+
+flow.setNodes(cloneDeep(props.nodes))
+flow.setConnectors(cloneDeep(props.connectors))
 </script>

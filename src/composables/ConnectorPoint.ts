@@ -1,13 +1,9 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { containerRef } from '@/composables/index'
 import type { TuseConnectorPointOptions } from '@/composables/types'
-import { useEventEmitter } from '@/composables/EventEmitter'
-import { emitterEvents } from '@/composables/emitterEvents'
 import { useConnectorCreator } from './ConnectorCreator'
 
 export function useConnectorPoint(data: TuseConnectorPointOptions) {
-  const EE = useEventEmitter().getEventEmitter()
   const connectorCreator = useConnectorCreator()
   const connectorPointElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TuseConnectorPointOptions> = ref(data)
@@ -31,41 +27,15 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
       ref: connectorPointElement.value,
       ...getOptions(),
     })
-    containerRef.value.addEventListener('mousemove', mouseMove)
-  }
-
-  function mouseMove(event: MouseEvent) {
-    event.preventDefault()
-    // options.value.position.x = event.clientX - moveStarting.x
-    // options.value.position.y = event.clientY - moveStarting.y
   }
 
   function mouseUp(_event: MouseEvent) {
     console.log('mouseUp')
-    containerRef.value.removeEventListener('mousemove', mouseMove)
+    connectorCreator.endDrawing({
+      ref: connectorPointElement.value,
+      ...getOptions(),
+    })
     connectorCreator.destroy()
-  }
-
-  function groundMouseUp() {
-    containerRef.value.removeEventListener('mousemove', mouseMove)
-    connectorCreator.destroy()
-    console.log('mouseUp2')
-  }
-
-  function startEmitterListener() {
-    EE.on(emitterEvents.container.groundMouseUp, groundMouseUp)
-  }
-
-  function destroyEmitterListener() {
-    EE.removeListener(emitterEvents.container.groundMouseUp, groundMouseUp)
-  }
-
-  function start() {
-    startEmitterListener()
-  }
-
-  function destroy() {
-    destroyEmitterListener()
   }
 
   return {
@@ -74,7 +44,5 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
     setConnectorPointElement,
     mouseDown,
     mouseUp,
-    start,
-    destroy,
   }
 }

@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
+import { containerRef } from '@/composables/index'
+import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
 import type { TuseConnectorCreatorConnectorOptions } from '@/composables/types'
@@ -25,6 +27,7 @@ const points = ref(cloneDeep(startingPoints))
 const drawingStatus = ref(false)
 
 export function useConnectorCreator() {
+  const flow = useFlow()
   const EE = useEventEmitter().getEventEmitter()
 
   function getPoints() {
@@ -44,18 +47,31 @@ export function useConnectorCreator() {
 
     console.log(points.value.start, 1)
     //
+    containerRef.value.addEventListener('mousemove', mouseMove)
+  }
+
+  function mouseMove(event: MouseEvent) {
+    event.preventDefault()
+    // options.value.position.x = event.clientX - moveStarting.x
+    // options.value.position.y = event.clientY - moveStarting.y
   }
 
   function endDrawing(value: TuseConnectorCreatorConnectorOptions) {
     if (!getDrawingStatus()) {
       return
     }
+    setDrawingStatus(false)
+    containerRef.value.removeEventListener('mousemove', mouseMove)
+
     points.value.end = cloneDeep(value)
     if (!points.value.end.incomingConnection) {
       return
     }
     console.log(points.value.end, 2)
-    setDrawingStatus(false)
+
+    flow.getConnectors().push({
+      id: Math.floor(Math.random() * 50),
+    })
   }
 
   function setDrawingStatus(value: boolean) {
@@ -67,7 +83,10 @@ export function useConnectorCreator() {
   }
 
   function groundMouseUp() {
-    setDrawingStatus(false)
+    setTimeout(() => {
+      setDrawingStatus(false)
+      containerRef.value.removeEventListener('mousemove', mouseMove)
+    }, 200)
   }
 
   function startEmitterListener() {
