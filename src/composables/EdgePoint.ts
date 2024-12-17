@@ -1,12 +1,13 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
+import { cloneDeep } from 'lodash'
 import { useEdgeCreator } from '@/composables/EdgeCreator'
 import type { TuseEdgePointOptions } from '@/composables/types'
 
 export function useEdgePoint(data: TuseEdgePointOptions) {
   const edgeCreator = useEdgeCreator()
   const edgePointElement: Ref<HTMLDivElement> = ref()
-  const options: Ref<TuseEdgePointOptions> = ref(data)
+  const options: Ref<TuseEdgePointOptions> = ref(cloneDeep(data))
 
   function getEdgePointElement() {
     return edgePointElement.value

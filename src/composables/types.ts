@@ -1,3 +1,6 @@
+import { useNode } from '@/composables/Node'
+import { useEdgePoint } from '@/composables/EdgePoint'
+import { useEdge } from '@/composables/Edge'
 import { edgePointType, planes } from '@/composables/enums'
 import { nodeEvents } from '@/composables/nodeEvents'
 
@@ -22,8 +25,28 @@ export type TNode = {
   }
 }
 
+export type TEdge = {
+  id: string
+  start: {
+    nodeId: string
+    pointId: string
+  }
+  end: {
+    nodeId: string
+    pointId: string
+  }
+}
+
+export type TuseNode = ReturnType<typeof useNode>
+export type TuseEdge = ReturnType<typeof useEdge>
+export type TuseEdgePoint = ReturnType<typeof useEdgePoint>
+
 export type TuseNodeOptions = {
   options: TNode
+}
+
+export type TEdgeOptions = {
+  options: TEdge
 }
 
 export type TNodeEvents = ValueOf<typeof nodeEvents>
@@ -39,19 +62,10 @@ export type TNodeEventListenerData = TNodeZIndexMessage
 export type TEdgePointTypeValues = ValueOf<typeof edgePointType>
 export type TuseEdgePointOptions = {
   id: string
+  nodeId: string
   type: TEdgePointTypeValues
   incomingConnection: boolean
   outgoingConnection: boolean
-}
-
-export type TEdgeOptions = {
-  id: string
-  start: {
-    pointId: string
-  }
-  end: {
-    pointId: string
-  }
 }
 
 export type TuseEdgeCreatorEdgeOptions = TuseEdgePointOptions & {

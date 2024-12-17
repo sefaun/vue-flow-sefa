@@ -14,18 +14,20 @@
 import type { PropType } from 'vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useEdge } from '@/composables/Edge'
-import type { TEdgeOptions } from '@/composables/types'
+import type { TEdge } from '@/composables/types'
 
 const props = defineProps({
   data: {
-    type: Object as PropType<TEdgeOptions>,
+    type: Object as PropType<TEdge>,
     default: {},
     required: true,
   },
 })
 
 const edgeRef = ref()
-const edge = useEdge(props.data)
+const edge = useEdge({
+  options: props.data,
+})
 
 onMounted(() => {
   edge.setEdgeElement(edgeRef.value)

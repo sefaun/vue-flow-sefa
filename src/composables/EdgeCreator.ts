@@ -10,6 +10,7 @@ import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 const startingPoints = {
   start: {
     id: '',
+    nodeId: '',
     type: 'input',
     incomingConnection: true,
     outgoingConnection: true,
@@ -17,8 +18,8 @@ const startingPoints = {
   } as TuseEdgeCreatorEdgeOptions,
   end: {
     id: '',
+    nodeId: '',
     type: 'output',
-    mode: 'free',
     incomingConnection: true,
     outgoingConnection: true,
     ref: null,
@@ -82,9 +83,11 @@ export function useEdgeCreator() {
     flow.getEdges().push({
       id: v4(),
       start: {
+        nodeId: points.value.start.nodeId,
         pointId: points.value.start.id,
       },
       end: {
+        nodeId: points.value.end.nodeId,
         pointId: points.value.end.id,
       },
     })

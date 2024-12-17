@@ -19,7 +19,7 @@ import { v4 } from 'uuid'
 import Container from '@/components/Container.vue'
 import Flow from '@/components/Flow.vue'
 import Edge from '@/components/Edge.vue'
-import { TNode, TEdgeOptions } from '@/composables/types'
+import { TNode, TEdge } from '@/composables/types'
 import NodeA from './NodeA.vue'
 import NodeB from './NodeB.vue'
 
@@ -54,7 +54,7 @@ const nodes: Ref<TNode[]> = ref([
   },
 ])
 
-const edges: Ref<TEdgeOptions[]> = ref([])
+const edges: Ref<TEdge[]> = ref([])
 </script>
 
 <style scoped></style>

@@ -1,0 +1,3 @@
+- nodlar hareket ettirilince bağlantılarıda hareket ettir.
+- önceden aynı outputtan aynı inputa yapılmış bağlantı varsa yenisini bağlama.
+-

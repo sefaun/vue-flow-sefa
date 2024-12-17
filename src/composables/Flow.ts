@@ -1,7 +1,9 @@
+import type { Ref } from 'vue'
 import { ref } from 'vue'
+import type { TNode, TEdge } from '@/composables/types'
 
-const nodes = ref([])
-const edges = ref([])
+const nodes: Ref<TNode[]> = ref([])
+const edges: Ref<TEdge[]> = ref([])
 
 export function useFlow() {
   function getNodes() {
@@ -12,11 +14,11 @@ export function useFlow() {
     return edges.value
   }
 
-  function setNodes(value) {
+  function setNodes(value: TNode[]) {
     nodes.value = value
   }
 
-  function setEdges(value) {
+  function setEdges(value: TEdge[]) {
     edges.value = value
   }
 

@@ -13,9 +13,11 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import { provide } from 'vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useNode } from '@/composables/Node'
 import type { TNode } from '@/composables/types'
+import { NodeId } from '@/context/index'
 
 const props = defineProps({
   data: {
@@ -24,6 +26,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+provide(NodeId, props.data.id)
 
 const nodeElementRef = ref()
 const nodeData = useNode({

@@ -14,11 +14,12 @@
 
 <script setup lang="ts">
 import type { PropType, CSSProperties } from 'vue'
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, inject } from 'vue'
 import { v4 } from 'uuid'
 import { points } from '@/composables/states'
 import { useEdgePoint } from '@/composables/EdgePoint'
 import type { TEdgePointTypeValues } from '@/composables/types'
+import { NodeId } from '@/context/index'
 
 const props = defineProps({
   id: {
@@ -51,10 +52,12 @@ const props = defineProps({
   },
 })
 
+const nodeId = inject(NodeId)
 const id = ref(props.id || v4())
 const pointRef = ref()
 const edgePoint = useEdgePoint({
   id: id.value,
+  nodeId,
   type: props.type,
   incomingConnection: props.incomingConnection,
   outgoingConnection: props.outgoingConnection,

@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { TNode } from '@/composables/types'
-import EdgePoint from './components/EdgePoint.vue'
+import EdgePoint from '@/components/EdgePoint.vue'
 
 const props = defineProps({
   data: {

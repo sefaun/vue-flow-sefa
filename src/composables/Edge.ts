@@ -2,14 +2,14 @@ import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
 import { points } from '@/composables/states'
-import type { TEdgeOptions } from '@/composables/types'
+import type { TEdge, TEdgeOptions } from '@/composables/types'
 
 export function useEdge(opts: TEdgeOptions) {
   const edgeElement: Ref<SVGPathElement> = ref()
-  const edgeOptions = cloneDeep(opts)
+  const edgeOptions: Ref<TEdge> = ref(cloneDeep(opts.options))
 
   function getEdgeOptions() {
-    return edgeOptions
+    return edgeOptions.value
   }
 
   function setEdgeElement(value: SVGPathElement) {
@@ -25,8 +25,8 @@ export function useEdge(opts: TEdgeOptions) {
   }
 
   function setDimension() {
-    const start = points.value[edgeOptions.start.pointId]
-    const end = points.value[edgeOptions.end.pointId]
+    const start = points.value[edgeOptions.value.start.pointId]
+    const end = points.value[edgeOptions.value.end.pointId]
 
     if (start && end) {
       const startBounding = start.getBoundingClientRect()

@@ -1,10 +1,13 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
+import { cloneDeep } from 'lodash'
 import { containerRef } from '@/composables/references'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
 import { nodeEvents } from '@/composables/nodeEvents'
 import type {
+  TNode,
+  TEdge,
   TNodeEventListenerData,
   TNodeEventMessage,
   TNodeEvents,
@@ -15,7 +18,8 @@ import type {
 export function useNode(data: TuseNodeOptions) {
   const EE = useEventEmitter().getEventEmitter()
   const nodeElement: Ref<HTMLDivElement> = ref()
-  const options = ref(data.options)
+  const options: Ref<TNode> = ref(cloneDeep(data.options))
+  const edges: Record<string, TEdge> = {}
 
   function getNodeOptions() {
     return options.value
@@ -23,6 +27,14 @@ export function useNode(data: TuseNodeOptions) {
 
   function getNodeElement() {
     return nodeElement.value
+  }
+
+  function setEdge(value: TEdge) {
+    edges[value.id] = value
+  }
+
+  function removeEdge(id: string) {
+    delete edges[id]
   }
 
   function sendZindexMessage() {
@@ -105,6 +117,8 @@ export function useNode(data: TuseNodeOptions) {
     mouseUp,
     contextMenu,
     setNodeElement,
+    setEdge,
+    removeEdge,
     start,
     destroy,
   }
