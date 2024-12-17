@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
-import { containerRef } from '@/composables/index'
+import { connectorDrawingRef, containerRef } from '@/composables/index'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
@@ -29,6 +29,12 @@ const drawingStatus = ref(false)
 export function useConnectorCreator() {
   const flow = useFlow()
   const EE = useEventEmitter().getEventEmitter()
+  const connectorDrawingData = {
+    startX: 0,
+    startY: 0,
+    mouseMoveX: 0,
+    mouseMoveY: 0,
+  }
 
   function getPoints() {
     return points.value
@@ -38,36 +44,39 @@ export function useConnectorCreator() {
     return drawingStatus.value
   }
 
-  function startDrawing(value: TuseConnectorCreatorConnectorOptions) {
+  function startDrawing(event: MouseEvent, value: TuseConnectorCreatorConnectorOptions) {
     points.value.start = cloneDeep(value)
     if (!points.value.start.outgoingConnection) {
       return
     }
     setDrawingStatus(true)
 
-    console.log(points.value.start, 1)
-    //
+    const bounding = points.value.start.ref.getBoundingClientRect()
+    connectorDrawingData.startX = bounding.left + bounding.width / 2
+    connectorDrawingData.startY = bounding.top + bounding.height / 2
+    connectorDrawingData.mouseMoveX = event.clientX
+    connectorDrawingData.mouseMoveY = event.clientY
+    setDimensionAttribute(connectorDrawingData)
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
   function mouseMove(event: MouseEvent) {
     event.preventDefault()
-    // options.value.position.x = event.clientX - moveStarting.x
-    // options.value.position.y = event.clientY - moveStarting.y
+    connectorDrawingData.mouseMoveX = event.clientX
+    connectorDrawingData.mouseMoveY = event.clientY
+    setDimensionAttribute(connectorDrawingData)
   }
 
   function endDrawing(value: TuseConnectorCreatorConnectorOptions) {
     if (!getDrawingStatus()) {
       return
     }
-    setDrawingStatus(false)
-    containerRef.value.removeEventListener('mousemove', mouseMove)
+    commonMouseUp()
 
     points.value.end = cloneDeep(value)
     if (!points.value.end.incomingConnection) {
       return
     }
-    console.log(points.value.end, 2)
 
     flow.getConnectors().push({
       id: Math.floor(Math.random() * 50),
@@ -78,15 +87,27 @@ export function useConnectorCreator() {
     drawingStatus.value = value
   }
 
+  function setDimensionAttribute(data: typeof connectorDrawingData) {
+    connectorDrawingRef.value.setAttribute(
+      'd',
+      `M ${data.startX},${data.startY} C ${data.startX + 200},${data.startY} ${data.mouseMoveX - 200},${data.mouseMoveY} ${
+        data.mouseMoveX
+      },${data.mouseMoveY}`
+    )
+  }
+
   function resetPoints() {
     points.value = cloneDeep(startingPoints)
   }
 
+  function commonMouseUp() {
+    setDrawingStatus(false)
+    containerRef.value.removeEventListener('mousemove', mouseMove)
+    connectorDrawingRef.value.removeAttribute('d')
+  }
+
   function groundMouseUp() {
-    setTimeout(() => {
-      setDrawingStatus(false)
-      containerRef.value.removeEventListener('mousemove', mouseMove)
-    }, 200)
+    commonMouseUp()
   }
 
   function startEmitterListener() {

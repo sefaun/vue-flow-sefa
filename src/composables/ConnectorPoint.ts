@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
+import { useConnectorCreator } from '@/composables/ConnectorCreator'
 import type { TuseConnectorPointOptions } from '@/composables/types'
-import { useConnectorCreator } from './ConnectorCreator'
 
 export function useConnectorPoint(data: TuseConnectorPointOptions) {
   const connectorCreator = useConnectorCreator()
@@ -20,10 +20,10 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
     connectorPointElement.value = value
   }
 
-  function mouseDown(_event: MouseEvent) {
+  function mouseDown(event: MouseEvent) {
     console.log('mouseDown')
     connectorCreator.start()
-    connectorCreator.startDrawing({
+    connectorCreator.startDrawing(event, {
       ref: connectorPointElement.value,
       ...getOptions(),
     })
