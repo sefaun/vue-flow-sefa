@@ -2,11 +2,11 @@
   <div class="absolute w-[200px] h-[200px] bg-red-500">
     <div class="flex">
       <div>
-        <ConnectorPoint type="input" :outgoing-connection="false"></ConnectorPoint>
+        <EdgePoint type="input" :outgoing-connection="false"></EdgePoint>
       </div>
       <div>{{ props.data.id }}</div>
       <div>
-        <ConnectorPoint type="output" :incoming-connection="false"></ConnectorPoint>
+        <EdgePoint type="output" :incoming-connection="false"></EdgePoint>
       </div>
     </div>
   </div>
@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { TNode } from '@/composables/types'
-import ConnectorPoint from './components/ConnectorPoint.vue'
+import EdgePoint from './components/EdgePoint.vue'
 
 const props = defineProps({
   data: {

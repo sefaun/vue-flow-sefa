@@ -1,12 +1,12 @@
 <template>
   <Container :class="'w-full h-screen bg-slate-400'">
-    <Flow :nodes="nodes" :connectors="connectors">
+    <Flow :nodes="nodes" :edges="edges">
       <template #node="{ data }">
         <NodeA v-if="data.type == 'a'" :data="data"></NodeA>
         <NodeB v-if="data.type == 'b'" :data="data"></NodeB>
       </template>
-      <template #connector="{ data }">
-        <Connector :data="data"></Connector>
+      <template #edge="{ data }">
+        <Edge :data="data"></Edge>
       </template>
     </Flow>
   </Container>
@@ -18,8 +18,8 @@ import { ref } from 'vue'
 import { v4 } from 'uuid'
 import Container from '@/components/Container.vue'
 import Flow from '@/components/Flow.vue'
-import Connector from '@/components/Connector.vue'
-import { TNode } from '@/composables/types'
+import Edge from '@/components/Edge.vue'
+import { TNode, TEdgeOptions } from '@/composables/types'
 import NodeA from './NodeA.vue'
 import NodeB from './NodeB.vue'
 
@@ -54,22 +54,7 @@ const nodes: Ref<TNode[]> = ref([
   },
 ])
 
-const connectors: Ref<unknown[]> = ref([
-  {
-    id: 1,
-    input: [
-      {
-        from: {
-          node: {
-            id: 'a',
-            connector: 1,
-          },
-        },
-        to: 'ddr',
-      },
-    ],
-  },
-])
+const edges: Ref<TEdgeOptions[]> = ref([])
 </script>
 
 <style scoped></style>

@@ -33,15 +33,15 @@
         </marker>
       </defs>
       <path
-        ref="connectorDrawingRef"
-        v-show="connectorCreator.getDrawingStatus()"
+        ref="edgeDrawingRef"
+        v-show="edgeCreator.getDrawingStatus()"
         class="fill-none stroke-[4] stroke-[green]"
         d="M 0,0 C 0,0 0,0 0,0"
         stroke-dasharray="15,5"
         marker-end="url(#thinker-drawing-end)"
       ></path>
-      <g v-for="connector of flow.getConnectors()" :key="connector.id" class="pointer-events-none">
-        <slot name="connector" v-bind="{ data: connector }"></slot>
+      <g v-for="edge of flow.getEdges()" :key="edge.id" class="pointer-events-none">
+        <slot name="edge" v-bind="{ data: edge }"></slot>
       </g>
     </svg>
   </div>
@@ -50,26 +50,33 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 import { cloneDeep } from 'lodash'
-import { flowRef, connectorDrawingRef } from '@/composables/index'
+import { flowRef, edgeDrawingRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
-import { useConnectorCreator } from '@/composables/ConnectorCreator'
-import type { TNode } from '@/composables/types'
+import { useEdgeCreator } from '@/composables/EdgeCreator'
+import type { TFlowPlaneValues, TNode } from '@/composables/types'
 import Node from '@/components/Node.vue'
 
 const props = defineProps({
   nodes: {
     type: Array as PropType<TNode[]>,
     default: [],
+    required: true,
   },
-  connectors: {
+  edges: {
     type: Array as PropType<any[]>,
     default: [],
+    required: true,
+  },
+  plane: {
+    type: String as PropType<TFlowPlaneValues>,
+    default: 'horizontal',
+    required: false,
   },
 })
 
 const flow = useFlow()
-const connectorCreator = useConnectorCreator()
+const edgeCreator = useEdgeCreator()
 
 flow.setNodes(cloneDeep(props.nodes))
-flow.setConnectors(cloneDeep(props.connectors))
+flow.setEdges(cloneDeep(props.edges))
 </script>

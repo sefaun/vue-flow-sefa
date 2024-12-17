@@ -5,7 +5,7 @@ export const emitterEvents = {
   node: {
     mouseDown: 'mouseDown',
   },
-  connector: {
+  edge: {
     mouseDown: 'mouseDown',
   },
 } as const

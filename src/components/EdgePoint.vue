@@ -2,9 +2,9 @@
   <div
     ref="pointRef"
     class="relative"
-    :id="props.id"
-    @mousedown.stop.left="connectorPoint.mouseDown"
-    @mouseup.stop.left="connectorPoint.mouseUp"
+    :id="id"
+    @mousedown.stop.left="edgePoint.mouseDown"
+    @mouseup.stop.left="edgePoint.mouseUp"
   >
     <div :style="props.style">
       <slot></slot>
@@ -16,17 +16,17 @@
 import type { PropType, CSSProperties } from 'vue'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { v4 } from 'uuid'
-import { useConnectorPoint } from '@/composables/ConnectorPoint'
-import type { TConnectorPointTypeValues } from '@/composables/types'
+import { points } from '@/composables/states'
+import { useEdgePoint } from '@/composables/EdgePoint'
+import type { TEdgePointTypeValues } from '@/composables/types'
 
 const props = defineProps({
   id: {
     type: String,
-    default: v4(),
     required: false,
   },
   type: {
-    type: String as PropType<TConnectorPointTypeValues>,
+    type: String as PropType<TEdgePointTypeValues>,
     required: true,
   },
   incomingConnection: {
@@ -51,17 +51,21 @@ const props = defineProps({
   },
 })
 
+const id = ref(props.id || v4())
 const pointRef = ref()
-const connectorPoint = useConnectorPoint({
-  id: props.id,
+const edgePoint = useEdgePoint({
+  id: id.value,
   type: props.type,
   incomingConnection: props.incomingConnection,
   outgoingConnection: props.outgoingConnection,
 })
 
 onMounted(() => {
-  connectorPoint.setConnectorPointElement(pointRef.value)
+  edgePoint.setEdgePointElement(pointRef.value)
+  points.value[id.value] = pointRef.value
 })
 
-onBeforeUnmount(() => {})
+onBeforeUnmount(() => {
+  delete points.value[id.value]
+})
 </script>

@@ -1,29 +1,29 @@
 import { ref } from 'vue'
 
 const nodes = ref([])
-const connectors = ref([])
+const edges = ref([])
 
 export function useFlow() {
   function getNodes() {
     return nodes.value
   }
 
-  function getConnectors() {
-    return connectors.value
+  function getEdges() {
+    return edges.value
   }
 
   function setNodes(value) {
     nodes.value = value
   }
 
-  function setConnectors(value) {
-    connectors.value = value
+  function setEdges(value) {
+    edges.value = value
   }
 
   return {
     getNodes,
-    getConnectors,
+    getEdges,
     setNodes,
-    setConnectors,
+    setEdges,
   }
 }

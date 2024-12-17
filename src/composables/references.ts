@@ -3,4 +3,4 @@ import { ref } from 'vue'
 
 export const containerRef: Ref<HTMLDivElement> = ref()
 export const flowRef: Ref<HTMLDivElement> = ref()
-export const connectorDrawingRef: Ref<SVGPathElement> = ref()
+export const edgeDrawingRef: Ref<SVGPathElement> = ref()

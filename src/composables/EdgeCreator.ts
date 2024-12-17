@@ -1,10 +1,11 @@
 import { ref } from 'vue'
+import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash'
-import { connectorDrawingRef, containerRef } from '@/composables/index'
+import { edgeDrawingRef, containerRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
-import type { TuseConnectorCreatorConnectorOptions } from '@/composables/types'
+import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 
 const startingPoints = {
   start: {
@@ -13,7 +14,7 @@ const startingPoints = {
     incomingConnection: true,
     outgoingConnection: true,
     ref: null,
-  } as TuseConnectorCreatorConnectorOptions,
+  } as TuseEdgeCreatorEdgeOptions,
   end: {
     id: '',
     type: 'output',
@@ -21,15 +22,15 @@ const startingPoints = {
     incomingConnection: true,
     outgoingConnection: true,
     ref: null,
-  } as TuseConnectorCreatorConnectorOptions,
+  } as TuseEdgeCreatorEdgeOptions,
 }
 const points = ref(cloneDeep(startingPoints))
 const drawingStatus = ref(false)
 
-export function useConnectorCreator() {
+export function useEdgeCreator() {
   const flow = useFlow()
   const EE = useEventEmitter().getEventEmitter()
-  const connectorDrawingData = {
+  const edgeDrawingData = {
     startX: 0,
     startY: 0,
     mouseMoveX: 0,
@@ -44,42 +45,48 @@ export function useConnectorCreator() {
     return drawingStatus.value
   }
 
-  function startDrawing(event: MouseEvent, value: TuseConnectorCreatorConnectorOptions) {
+  function startDrawing(event: MouseEvent, value: TuseEdgeCreatorEdgeOptions) {
     points.value.start = cloneDeep(value)
     if (!points.value.start.outgoingConnection) {
       return
     }
-    setDrawingStatus(true)
 
+    setDrawingStatus(true)
     const bounding = points.value.start.ref.getBoundingClientRect()
-    connectorDrawingData.startX = bounding.left + bounding.width / 2
-    connectorDrawingData.startY = bounding.top + bounding.height / 2
-    connectorDrawingData.mouseMoveX = event.clientX
-    connectorDrawingData.mouseMoveY = event.clientY
-    setDimensionAttribute(connectorDrawingData)
+    edgeDrawingData.startX = bounding.left + bounding.width / 2
+    edgeDrawingData.startY = bounding.top + bounding.height / 2
+    edgeDrawingData.mouseMoveX = event.clientX
+    edgeDrawingData.mouseMoveY = event.clientY
+    setDimensionAttribute(edgeDrawingData)
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
   function mouseMove(event: MouseEvent) {
     event.preventDefault()
-    connectorDrawingData.mouseMoveX = event.clientX
-    connectorDrawingData.mouseMoveY = event.clientY
-    setDimensionAttribute(connectorDrawingData)
+    edgeDrawingData.mouseMoveX = event.clientX
+    edgeDrawingData.mouseMoveY = event.clientY
+    setDimensionAttribute(edgeDrawingData)
   }
 
-  function endDrawing(value: TuseConnectorCreatorConnectorOptions) {
+  function endDrawing(value: TuseEdgeCreatorEdgeOptions) {
     if (!getDrawingStatus()) {
       return
     }
-    commonMouseUp()
 
+    commonMouseUp()
     points.value.end = cloneDeep(value)
     if (!points.value.end.incomingConnection) {
       return
     }
 
-    flow.getConnectors().push({
-      id: Math.floor(Math.random() * 50),
+    flow.getEdges().push({
+      id: v4(),
+      start: {
+        pointId: points.value.start.id,
+      },
+      end: {
+        pointId: points.value.end.id,
+      },
     })
   }
 
@@ -87,8 +94,8 @@ export function useConnectorCreator() {
     drawingStatus.value = value
   }
 
-  function setDimensionAttribute(data: typeof connectorDrawingData) {
-    connectorDrawingRef.value.setAttribute(
+  function setDimensionAttribute(data: typeof edgeDrawingData) {
+    edgeDrawingRef.value.setAttribute(
       'd',
       `M ${data.startX},${data.startY} C ${data.startX + 200},${data.startY} ${data.mouseMoveX - 200},${data.mouseMoveY} ${
         data.mouseMoveX
@@ -103,11 +110,13 @@ export function useConnectorCreator() {
   function commonMouseUp() {
     setDrawingStatus(false)
     containerRef.value.removeEventListener('mousemove', mouseMove)
-    connectorDrawingRef.value.removeAttribute('d')
+    edgeDrawingRef.value.removeAttribute('d')
   }
 
   function groundMouseUp() {
-    commonMouseUp()
+    setTimeout(() => {
+      commonMouseUp()
+    }, 50)
   }
 
   function startEmitterListener() {

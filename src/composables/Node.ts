@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { containerRef } from '@/composables/index'
+import { containerRef } from '@/composables/references'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
 import { nodeEvents } from '@/composables/nodeEvents'

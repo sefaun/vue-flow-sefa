@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue'
-import { containerRef } from '@/composables/index'
+import { containerRef } from '@/composables/references'
 import { useContainer } from '@/composables/Container'
 import { useEventEmitter } from '@/composables/EventEmitter'
 
