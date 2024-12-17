@@ -16,10 +16,6 @@ export function useNode(data: TuseNodeOptions) {
   const EE = useEventEmitter().getEventEmitter()
   const nodeElement: Ref<HTMLDivElement> = ref()
   const options = ref(data.options)
-  let moveStarting = {
-    x: 0,
-    y: 0,
-  }
 
   function getNodeOptions() {
     return options.value
@@ -38,19 +34,17 @@ export function useNode(data: TuseNodeOptions) {
     })
   }
 
-  function mouseDown(event: MouseEvent) {
+  function mouseDown(_event: MouseEvent) {
     console.log('down')
     sendZindexMessage()
     options.value.style.zIndex = 1001
-    moveStarting.x = event.clientX - nodeElement.value.getBoundingClientRect().left
-    moveStarting.y = event.clientY - nodeElement.value.getBoundingClientRect().top
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
   function mouseMove(event: MouseEvent) {
     event.preventDefault()
-    options.value.position.x = event.clientX - moveStarting.x
-    options.value.position.y = event.clientY - moveStarting.y
+    options.value.position.x = event.movementX + options.value.position.x
+    options.value.position.y = event.movementY + options.value.position.y
   }
 
   function mouseUp(_event: MouseEvent) {

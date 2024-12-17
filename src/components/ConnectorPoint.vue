@@ -61,10 +61,7 @@ const connectorPoint = useConnectorPoint({
 
 onMounted(() => {
   connectorPoint.setConnectorPointElement(pointRef.value)
-  connectorPoint.start()
 })
 
-onBeforeUnmount(() => {
-  connectorPoint.destroy()
-})
+onBeforeUnmount(() => {})
 </script>

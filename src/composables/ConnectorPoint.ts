@@ -1,13 +1,9 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { containerRef } from '@/composables/index'
+import { useConnectorCreator } from '@/composables/ConnectorCreator'
 import type { TuseConnectorPointOptions } from '@/composables/types'
-import { useEventEmitter } from '@/composables/EventEmitter'
-import { emitterEvents } from '@/composables/emitterEvents'
-import { useConnectorCreator } from './ConnectorCreator'
 
 export function useConnectorPoint(data: TuseConnectorPointOptions) {
-  const EE = useEventEmitter().getEventEmitter()
   const connectorCreator = useConnectorCreator()
   const connectorPointElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TuseConnectorPointOptions> = ref(data)
@@ -24,40 +20,22 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
     connectorPointElement.value = value
   }
 
-  function mouseDown() {
+  function mouseDown(event: MouseEvent) {
     console.log('mouseDown')
-    connectorCreator.startDrawing({
+    connectorCreator.start()
+    connectorCreator.startDrawing(event, {
       ref: connectorPointElement.value,
       ...getOptions(),
     })
-    containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
-  function mouseMove() {}
-
-  function mouseUp() {
+  function mouseUp(_event: MouseEvent) {
     console.log('mouseUp')
-    containerRef.value.removeEventListener('mousemove', mouseMove)
-  }
-
-  function groundMouseUp() {
-    containerRef.value.removeEventListener('mousemove', mouseMove)
-  }
-
-  function startEmitterListener() {
-    EE.on(emitterEvents.container.groundMouseUp, groundMouseUp)
-  }
-
-  function destroyEmitterListener() {
-    EE.removeListener(emitterEvents.container.groundMouseUp, groundMouseUp)
-  }
-
-  function start() {
-    startEmitterListener()
-  }
-
-  function destroy() {
-    destroyEmitterListener()
+    connectorCreator.endDrawing({
+      ref: connectorPointElement.value,
+      ...getOptions(),
+    })
+    connectorCreator.destroy()
   }
 
   return {
@@ -66,7 +44,5 @@ export function useConnectorPoint(data: TuseConnectorPointOptions) {
     setConnectorPointElement,
     mouseDown,
     mouseUp,
-    start,
-    destroy,
   }
 }
