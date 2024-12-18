@@ -16,6 +16,7 @@ import type { PropType } from 'vue'
 import { provide } from 'vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useNode } from '@/composables/Node'
+import { nodes } from '@/composables/store'
 import type { TNode } from '@/composables/types'
 import { NodeId } from '@/context/index'
 
@@ -39,9 +40,11 @@ const nodeOptions = nodeData.getNodeOptions()
 onMounted(() => {
   nodeData.setNodeElement(nodeElementRef.value)
   nodeData.start()
+  nodes.value[props.data.id] = nodeData
 })
 
 onBeforeUnmount(() => {
   nodeData.destroy()
+  delete nodes.value[props.data.id]
 })
 </script>

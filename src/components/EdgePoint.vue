@@ -16,7 +16,7 @@
 import type { PropType, CSSProperties } from 'vue'
 import { onMounted, onBeforeUnmount, ref, inject } from 'vue'
 import { v4 } from 'uuid'
-import { points } from '@/composables/states'
+import { points } from '@/composables/store'
 import { useEdgePoint } from '@/composables/EdgePoint'
 import type { TEdgePointTypeValues } from '@/composables/types'
 import { NodeId } from '@/context/index'

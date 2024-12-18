@@ -14,6 +14,7 @@
 import type { PropType } from 'vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useEdge } from '@/composables/Edge'
+import { edges } from '@/composables/store'
 import type { TEdge } from '@/composables/types'
 
 const props = defineProps({
@@ -33,9 +34,11 @@ onMounted(() => {
   edge.setEdgeElement(edgeRef.value)
   edge.start()
   edge.setDimension()
+  edges.value[props.data.id] = edge
 })
 
 onBeforeUnmount(() => {
   edge.destroy()
+  delete edges.value[props.data.id]
 })
 </script>

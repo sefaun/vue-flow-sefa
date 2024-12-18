@@ -5,6 +5,7 @@ import { edgeDrawingRef, containerRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
+import { nodes } from '@/composables/store'
 import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 
 const startingPoints = {
@@ -80,7 +81,7 @@ export function useEdgeCreator() {
       return
     }
 
-    flow.getEdges().push({
+    const edgeData = {
       id: v4(),
       start: {
         nodeId: points.value.start.nodeId,
@@ -90,7 +91,11 @@ export function useEdgeCreator() {
         nodeId: points.value.end.nodeId,
         pointId: points.value.end.id,
       },
-    })
+    }
+    flow.getEdges().push(edgeData)
+
+    nodes.value[points.value.start.nodeId].setEdge(edgeData.id)
+    nodes.value[points.value.end.nodeId].setEdge(edgeData.id)
   }
 
   function setDrawingStatus(value: boolean) {

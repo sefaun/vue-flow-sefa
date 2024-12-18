@@ -5,9 +5,9 @@ import { containerRef } from '@/composables/references'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
 import { nodeEvents } from '@/composables/nodeEvents'
+import { edges } from '@/composables/store'
 import type {
   TNode,
-  TEdge,
   TNodeEventListenerData,
   TNodeEventMessage,
   TNodeEvents,
@@ -19,7 +19,7 @@ export function useNode(data: TuseNodeOptions) {
   const EE = useEventEmitter().getEventEmitter()
   const nodeElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TNode> = ref(cloneDeep(data.options))
-  const edges: Record<string, TEdge> = {}
+  const nodeEdges: string[] = []
 
   function getNodeOptions() {
     return options.value
@@ -29,12 +29,13 @@ export function useNode(data: TuseNodeOptions) {
     return nodeElement.value
   }
 
-  function setEdge(value: TEdge) {
-    edges[value.id] = value
+  function setEdge(id: string) {
+    nodeEdges.push(id)
   }
 
   function removeEdge(id: string) {
-    delete edges[id]
+    const index = nodeEdges.findIndex((ids) => ids == id)
+    nodeEdges.splice(index, 1)
   }
 
   function sendZindexMessage() {
@@ -47,7 +48,6 @@ export function useNode(data: TuseNodeOptions) {
   }
 
   function mouseDown(_event: MouseEvent) {
-    console.log('down')
     sendZindexMessage()
     options.value.style.zIndex = 1001
     containerRef.value.addEventListener('mousemove', mouseMove)
@@ -57,15 +57,17 @@ export function useNode(data: TuseNodeOptions) {
     event.preventDefault()
     options.value.position.x = event.movementX + options.value.position.x
     options.value.position.y = event.movementY + options.value.position.y
+
+    for (const id of nodeEdges) {
+      edges.value[id].setDimension()
+    }
   }
 
   function mouseUp(_event: MouseEvent) {
-    console.log('up')
     containerRef.value.removeEventListener('mousemove', mouseMove)
   }
 
   function contextMenu(_event: MouseEvent) {
-    console.log('contextMenu')
     sendZindexMessage()
     options.value.style.zIndex = 1001
   }
