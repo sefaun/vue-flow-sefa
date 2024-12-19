@@ -5,7 +5,10 @@ import { containerRef } from '@/composables/references'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
 import { nodeEvents } from '@/composables/nodeEvents'
-import { edges } from '@/composables/store'
+import { edges, nodes } from '@/composables/store'
+import { useNodeSelection } from '@/composables/NodeSelection'
+import { mouseButtons } from '@/composables/enums'
+import { ctrlOrMetaKey } from '@/composables/utils'
 import type {
   TNode,
   TNodeEventListenerData,
@@ -17,9 +20,11 @@ import type {
 
 export function useNode(data: TuseNodeOptions) {
   const EE = useEventEmitter().getEventEmitter()
+  const nodeSelection = useNodeSelection()
   const nodeElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TNode> = ref(cloneDeep(data.options))
   const nodeEdges: string[] = []
+  let nodeMoveStatus = false
 
   function getNodeOptions() {
     return options.value
@@ -29,13 +34,27 @@ export function useNode(data: TuseNodeOptions) {
     return nodeElement.value
   }
 
+  function getEdges() {
+    return nodeEdges
+  }
+
+  function getNodeMoveStatus() {
+    return nodeMoveStatus
+  }
+
   function setEdge(id: string) {
     nodeEdges.push(id)
   }
 
+  function setNodeMoveStatus(value: boolean) {
+    nodeMoveStatus = value
+  }
+
   function removeEdge(id: string) {
-    const index = nodeEdges.findIndex((ids) => ids == id)
-    nodeEdges.splice(index, 1)
+    const index = nodeEdges.indexOf(id)
+    if (index != -1) {
+      nodeEdges.splice(index, 1)
+    }
   }
 
   function sendZindexMessage() {
@@ -47,29 +66,86 @@ export function useNode(data: TuseNodeOptions) {
     })
   }
 
+  function edgeMovementOperations() {
+    if (nodeSelection.getNodeSelection().length > 1) {
+      let nodeEdgeIds = []
+
+      for (const id of nodeSelection.getNodeSelection()) {
+        nodeEdgeIds.push(...nodes.value[id].getEdges())
+      }
+
+      nodeSelection.setSelectedNodeEdges(...new Set(nodeEdgeIds))
+    }
+  }
+
+  function controlNodes(event: MouseEvent) {
+    for (const id of nodeSelection.getNodeSelection().length > 1 ? nodeSelection.getNodeSelection() : [options.value.id]) {
+      nodes.value[id].nodeMove(event.movementX, event.movementY)
+    }
+  }
+
+  function controlNodeEdges() {
+    for (const id of nodeSelection.getNodeSelection().length > 1 ? nodeSelection.getSelectedNodeEdges() : nodeEdges) {
+      edges.value[id].setDimension()
+    }
+  }
+
+  function selectionOperations(event: MouseEvent) {
+    if (event.button == mouseButtons.leftButton) {
+      if (ctrlOrMetaKey(event)) {
+        if (!nodeSelection.getNodeSelection().includes(options.value.id)) {
+          nodeSelection.setNodeSelection(options.value.id)
+        } else {
+          nodeSelection.removeNodeSelectionById(options.value.id)
+        }
+        return
+      }
+
+      if (!ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
+        nodeSelection.clearNodeSelection()
+        nodeSelection.setNodeSelection(options.value.id)
+        return
+      }
+
+      if (ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
+        if (!nodeSelection.getNodeSelection().includes(options.value.id)) {
+          nodeSelection.setNodeSelection(options.value.id)
+        } else {
+          nodeSelection.removeNodeSelectionById(options.value.id)
+        }
+        return
+      }
+    }
+  }
+
   function mouseDown(_event: MouseEvent) {
     sendZindexMessage()
     options.value.style.zIndex = 1001
+    edgeMovementOperations()
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
   function mouseMove(event: MouseEvent) {
     event.preventDefault()
-    options.value.position.x = event.movementX + options.value.position.x
-    options.value.position.y = event.movementY + options.value.position.y
-
-    for (const id of nodeEdges) {
-      edges.value[id].setDimension()
-    }
+    setNodeMoveStatus(true)
+    controlNodes(event)
+    controlNodeEdges()
   }
 
-  function mouseUp(_event: MouseEvent) {
+  function mouseUp(event: MouseEvent) {
+    selectionOperations(event)
+    setNodeMoveStatus(false)
     containerRef.value.removeEventListener('mousemove', mouseMove)
   }
 
   function contextMenu(_event: MouseEvent) {
     sendZindexMessage()
     options.value.style.zIndex = 1001
+  }
+
+  function nodeMove(x: number, y: number) {
+    options.value.position.x = x + options.value.position.x
+    options.value.position.y = y + options.value.position.y
   }
 
   function setNodeElement(element: HTMLDivElement) {
@@ -114,10 +190,12 @@ export function useNode(data: TuseNodeOptions) {
   return {
     getNodeElement,
     getNodeOptions,
+    getEdges,
     mouseDown,
     mouseMove,
     mouseUp,
     contextMenu,
+    nodeMove,
     setNodeElement,
     setEdge,
     removeEdge,
