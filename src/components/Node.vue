@@ -17,8 +17,8 @@ import { provide } from 'vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useNode } from '@/composables/Node'
 import { nodes } from '@/composables/store'
-import type { TNode } from '@/composables/types'
 import { NodeId } from '@/context/index'
+import type { TNode } from '@/composables/types'
 
 const props = defineProps({
   data: {

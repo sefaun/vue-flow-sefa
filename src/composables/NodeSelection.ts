@@ -32,6 +32,7 @@ export function useNodeSelection() {
 
   function clearNodeSelection() {
     nodeSelections.value = []
+    selectedNodeEdges.value = []
   }
 
   return {

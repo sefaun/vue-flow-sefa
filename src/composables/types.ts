@@ -66,6 +66,8 @@ export type TuseEdgePointOptions = {
   type: TEdgePointTypeValues
   incomingConnection: boolean
   outgoingConnection: boolean
+  incomingConnectionLimit: number
+  outgoingConnectionLimit: number
 }
 
 export type TuseEdgeCreatorEdgeOptions = TuseEdgePointOptions & {

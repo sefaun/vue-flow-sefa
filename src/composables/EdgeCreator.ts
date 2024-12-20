@@ -77,7 +77,12 @@ export function useEdgeCreator() {
 
     commonMouseUp()
     points.value.end = cloneDeep(value)
+
     if (!points.value.end.incomingConnection) {
+      return
+    }
+
+    if (points.value.start.id == points.value.end.id) {
       return
     }
 

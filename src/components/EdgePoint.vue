@@ -40,6 +40,16 @@ const props = defineProps({
     default: true,
     required: false,
   },
+  incomingConnectionLimit: {
+    type: Number,
+    default: -1,
+    required: false,
+  },
+  outgoingConnectionLimit: {
+    type: Number,
+    default: -1,
+    required: false,
+  },
   style: {
     type: Object as PropType<CSSProperties>,
     default: {
@@ -61,6 +71,8 @@ const edgePoint = useEdgePoint({
   type: props.type,
   incomingConnection: props.incomingConnection,
   outgoingConnection: props.outgoingConnection,
+  incomingConnectionLimit: props.incomingConnectionLimit,
+  outgoingConnectionLimit: props.outgoingConnectionLimit,
 })
 
 onMounted(() => {
