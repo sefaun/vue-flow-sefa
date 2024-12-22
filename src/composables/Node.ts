@@ -7,7 +7,8 @@ import { emitterEvents } from '@/composables/events'
 import { nodeEvents } from '@/composables/events'
 import { edges, nodes } from '@/composables/store'
 import { useSelection } from '@/composables/Selection'
-import { mouseButtons } from '@/composables/enums'
+import { useFlowController } from '@/composables/FlowController'
+import { activeStyles, passiveStyles } from '@/composables/controller'
 import { ctrlOrMetaKey } from '@/composables/utils'
 import type {
   TNode,
@@ -21,6 +22,7 @@ import type {
 export function useNode(data: TuseNodeOptions) {
   const EE = useEventEmitter().getEventEmitter()
   const selection = useSelection()
+  const flowController = useFlowController()
   const nodeElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TNode> = ref(cloneDeep(data.options))
   const nodeEdges: string[] = []
@@ -82,7 +84,7 @@ export function useNode(data: TuseNodeOptions) {
 
   function controlNodes(event: MouseEvent) {
     for (const id of selection.getNodeSelection().length > 1 ? selection.getNodeSelection() : [options.value.id]) {
-      nodes.value[id].nodeMove(event.movementX, event.movementY)
+      nodes.value[id].nodeMove(flowController.getRealValue(event.movementX), flowController.getRealValue(event.movementY))
     }
   }
 
@@ -93,35 +95,34 @@ export function useNode(data: TuseNodeOptions) {
   }
 
   function selectionOperations(event: MouseEvent) {
-    if (event.button == mouseButtons.leftButton) {
-      if (ctrlOrMetaKey(event)) {
-        if (!selection.getNodeSelection().includes(options.value.id)) {
-          selection.setNodeSelection(options.value.id)
-        } else {
-          selection.removeNodeSelectionById(options.value.id)
-        }
-        return
-      }
-
-      if (!ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
-        selection.clearSelections()
+    if (ctrlOrMetaKey(event)) {
+      if (!selection.getNodeSelection().includes(options.value.id)) {
         selection.setNodeSelection(options.value.id)
-        return
+      } else {
+        selection.removeNodeSelectionById(options.value.id)
       }
+      return
+    }
 
-      if (ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
-        if (!selection.getNodeSelection().includes(options.value.id)) {
-          selection.setNodeSelection(options.value.id)
-        } else {
-          selection.removeNodeSelectionById(options.value.id)
-        }
-        return
+    if (!ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
+      selection.clearSelections()
+      selection.setNodeSelection(options.value.id)
+      return
+    }
+
+    if (ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
+      if (!selection.getNodeSelection().includes(options.value.id)) {
+        selection.setNodeSelection(options.value.id)
+      } else {
+        selection.removeNodeSelectionById(options.value.id)
       }
+      return
     }
   }
 
   function mouseDown(_event: MouseEvent) {
     sendZindexMessage()
+    activeStyles()
     options.value.style.zIndex = 1001
     edgeMovementOperations()
     containerRef.value.addEventListener('mousemove', mouseMove)
@@ -135,6 +136,7 @@ export function useNode(data: TuseNodeOptions) {
   }
 
   function mouseUp(event: MouseEvent) {
+    passiveStyles()
     selectionOperations(event)
     setNodeMoveStatus(false)
     containerRef.value.removeEventListener('mousemove', mouseMove)

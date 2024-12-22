@@ -3,6 +3,7 @@ import { cloneDeep } from 'lodash'
 import { edgeDrawingRef, containerRef, flowRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
+import { useFlowController } from '@/composables/FlowController'
 import { emitterEvents } from '@/composables/events'
 import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 
@@ -29,6 +30,7 @@ const drawingStatus = ref(false)
 
 export function useEdgeCreator() {
   const flow = useFlow()
+  const flowController = useFlowController()
   const EE = useEventEmitter().getEventEmitter()
   let flowBounding: DOMRect = null
   const edgeDrawingData = {
@@ -56,18 +58,20 @@ export function useEdgeCreator() {
     flowBounding = flowRef.value.getBoundingClientRect()
     const bounding = points.value.start.ref.getBoundingClientRect()
 
-    edgeDrawingData.startX = bounding.left - flowBounding.left + bounding.width / 2
-    edgeDrawingData.startY = bounding.top - flowBounding.top + bounding.height / 2
-    edgeDrawingData.mouseMoveX = event.clientX - flowBounding.left
-    edgeDrawingData.mouseMoveY = event.clientY - flowBounding.top
+    edgeDrawingData.startX = flowController.getRealValue(bounding.left - flowBounding.left + bounding.width / 2)
+    edgeDrawingData.startY = flowController.getRealValue(bounding.top - flowBounding.top + bounding.height / 2)
+    edgeDrawingData.mouseMoveX = flowController.getRealValue(event.clientX - flowBounding.left)
+    edgeDrawingData.mouseMoveY = flowController.getRealValue(event.clientY - flowBounding.top)
     setDimensionAttribute(edgeDrawingData)
+
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
   function mouseMove(event: MouseEvent) {
     event.preventDefault()
-    edgeDrawingData.mouseMoveX = event.clientX - flowBounding.left
-    edgeDrawingData.mouseMoveY = event.clientY - flowBounding.top
+
+    edgeDrawingData.mouseMoveX = flowController.getRealValue(event.clientX - flowBounding.left)
+    edgeDrawingData.mouseMoveY = flowController.getRealValue(event.clientY - flowBounding.top)
     setDimensionAttribute(edgeDrawingData)
   }
 

@@ -1,5 +1,11 @@
 <template>
-  <div ref="containerRef" class="relative">
+  <div
+    ref="containerRef"
+    class="relative cursor-grab overflow-hidden"
+    @mousedown.prevent.stop.left="flowController.mouseDown"
+    @mouseup.prevent.stop.left="flowController.mouseUp"
+    @wheel.prevent="flowController.wheel"
+  >
     <slot></slot>
   </div>
 </template>
@@ -9,6 +15,7 @@ import { onBeforeUnmount, onMounted } from 'vue'
 import { containerRef } from '@/composables/references'
 import { useContainer } from '@/composables/Container'
 import { useEventEmitter } from '@/composables/EventEmitter'
+import { useFlowController } from '@/composables/FlowController'
 
 const props = defineProps({
   maxListener: {
@@ -23,6 +30,7 @@ eventEmitter.start({
 })
 
 const container = useContainer()
+const flowController = useFlowController()
 
 onMounted(() => {
   container.start()

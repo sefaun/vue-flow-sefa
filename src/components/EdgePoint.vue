@@ -1,7 +1,7 @@
 <template>
   <div
     ref="pointRef"
-    class="relative"
+    class="relative cursor-crosshair"
     :id="id"
     @mousedown.stop.left="edgePoint.mouseDown"
     @mouseup.stop.left="edgePoint.mouseUp"

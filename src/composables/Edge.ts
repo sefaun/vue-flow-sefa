@@ -4,12 +4,13 @@ import { cloneDeep } from 'lodash'
 import { flowRef } from '@/composables/references'
 import { nodes, points } from '@/composables/store'
 import { useSelection } from '@/composables/Selection'
-import { mouseButtons } from '@/composables/enums'
+import { useFlowController } from '@/composables/FlowController'
 import { ctrlOrMetaKey } from '@/composables/utils'
 import type { TEdge, TEdgeOptions } from '@/composables/types'
 
 export function useEdge(opts: TEdgeOptions) {
   const selection = useSelection()
+  const flowController = useFlowController()
   const edgeElement: Ref<SVGPathElement> = ref()
   const options: Ref<TEdge> = ref(cloneDeep(opts.options))
 
@@ -22,17 +23,15 @@ export function useEdge(opts: TEdgeOptions) {
   }
 
   function click(event: MouseEvent) {
-    if (event.button == mouseButtons.leftButton) {
-      if (ctrlOrMetaKey(event)) {
-        if (!selection.getEdgeSelection().includes(options.value.id)) {
-          selection.setEdgeSelection(options.value.id)
-        } else {
-          selection.removeEdgeSelectionById(options.value.id)
-        }
-      } else {
-        selection.clearSelections()
+    if (ctrlOrMetaKey(event)) {
+      if (!selection.getEdgeSelection().includes(options.value.id)) {
         selection.setEdgeSelection(options.value.id)
+      } else {
+        selection.removeEdgeSelectionById(options.value.id)
       }
+    } else {
+      selection.clearSelections()
+      selection.setEdgeSelection(options.value.id)
     }
   }
 
@@ -48,10 +47,10 @@ export function useEdge(opts: TEdgeOptions) {
       const flowBounding = flowRef.value.getBoundingClientRect()
       const startBounding = start.getBoundingClientRect()
       const endBounding = end.getBoundingClientRect()
-      const startX = startBounding.left - flowBounding.left + startBounding.width / 2
-      const startY = startBounding.top - flowBounding.top + startBounding.height / 2
-      const endX = endBounding.left - flowBounding.left + endBounding.width / 2
-      const endY = endBounding.top - flowBounding.top + endBounding.height / 2
+      const startX = flowController.getRealValue(startBounding.left - flowBounding.left + startBounding.width / 2)
+      const startY = flowController.getRealValue(startBounding.top - flowBounding.top + startBounding.height / 2)
+      const endX = flowController.getRealValue(endBounding.left - flowBounding.left + endBounding.width / 2)
+      const endY = flowController.getRealValue(endBounding.top - flowBounding.top + endBounding.height / 2)
 
       edgeElement.value.setAttribute(
         'd',

@@ -1,9 +1,11 @@
 <template>
-  <div ref="flowRef" class="w-full h-full">
-    <Node v-for="node of flow.getNodes()" :key="node.id" :data="node">
-      <slot name="node" v-bind="{ data: node }"></slot>
-    </Node>
-    <svg width="100%" height="100%" class="pointer-events-none">
+  <div ref="flowRef" class="w-full h-full origin-center">
+    <div>
+      <Node v-for="node of flow.getNodes()" :key="node.id" :data="node">
+        <slot name="node" v-bind="{ data: node }"></slot>
+      </Node>
+    </div>
+    <svg class="absolute w-full h-full left-0 top-0 overflow-visible pointer-events-none">
       <defs>
         <marker
           id="thinker-arrow-end"
