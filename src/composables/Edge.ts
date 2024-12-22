@@ -30,6 +30,7 @@ export function useEdge(opts: TEdgeOptions) {
           selection.removeEdgeSelectionById(options.value.id)
         }
       } else {
+        selection.clearSelections()
         selection.setEdgeSelection(options.value.id)
       }
     }

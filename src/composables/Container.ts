@@ -1,5 +1,5 @@
 import { useEventEmitter } from '@/composables/EventEmitter'
-import { emitterEvents } from '@/composables/emitterEvents'
+import { emitterEvents } from '@/composables/events'
 
 export function useContainer() {
   const eventEmitter = useEventEmitter()

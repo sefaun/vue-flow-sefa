@@ -2,7 +2,7 @@ import { useNode } from '@/composables/Node'
 import { useEdgePoint } from '@/composables/EdgePoint'
 import { useEdge } from '@/composables/Edge'
 import { edgePointType, planes } from '@/composables/enums'
-import { nodeEvents } from '@/composables/nodeEvents'
+import { nodeEvents } from '@/composables/events'
 
 export type ValueOf<T> = T[keyof T]
 

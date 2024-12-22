@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash'
 import { edgeDrawingRef, containerRef, flowRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
-import { emitterEvents } from '@/composables/emitterEvents'
+import { emitterEvents } from '@/composables/events'
 import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 
 const startingPoints = {
