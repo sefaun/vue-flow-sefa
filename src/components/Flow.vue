@@ -49,7 +49,6 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import { cloneDeep } from 'lodash'
 import { flowRef, edgeDrawingRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEdgeCreator } from '@/composables/EdgeCreator'
@@ -77,6 +76,6 @@ const props = defineProps({
 const flow = useFlow()
 const edgeCreator = useEdgeCreator()
 
-flow.setNodes(cloneDeep(props.nodes))
-flow.setEdges(cloneDeep(props.edges))
+flow.setNodes(props.nodes)
+flow.setEdges(props.edges)
 </script>

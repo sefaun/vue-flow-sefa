@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
+import { cloneDeep } from 'lodash'
 import type { TNode, TEdge } from '@/composables/types'
 
 const nodes: Ref<TNode[]> = ref([])
@@ -15,11 +16,11 @@ export function useFlow() {
   }
 
   function setNodes(value: TNode[]) {
-    nodes.value = value
+    nodes.value = cloneDeep(value)
   }
 
   function setEdges(value: TEdge[]) {
-    edges.value = value
+    edges.value = cloneDeep(value)
   }
 
   return {

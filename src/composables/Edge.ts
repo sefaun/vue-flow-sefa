@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
-import { points } from '@/composables/store'
+import { nodes, points } from '@/composables/store'
 import type { TEdge, TEdgeOptions } from '@/composables/types'
 
 export function useEdge(opts: TEdgeOptions) {
@@ -43,9 +43,20 @@ export function useEdge(opts: TEdgeOptions) {
     }
   }
 
-  function start() {}
+  function start() {
+    setDimension()
+    nodes.value[edgeOptions.value.start.nodeId].setEdge(edgeOptions.value.id)
+    nodes.value[edgeOptions.value.end.nodeId].setEdge(edgeOptions.value.id)
+  }
 
-  function destroy() {}
+  function destroy() {
+    if (nodes.value[edgeOptions.value.start.nodeId]) {
+      nodes.value[edgeOptions.value.start.nodeId].removeEdge(edgeOptions.value.id)
+    }
+    if (nodes.value[edgeOptions.value.end.nodeId]) {
+      nodes.value[edgeOptions.value.end.nodeId].removeEdge(edgeOptions.value.id)
+    }
+  }
 
   return {
     getEdgeOptions,
