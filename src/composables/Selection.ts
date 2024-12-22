@@ -3,10 +3,15 @@ import { ref } from 'vue'
 
 const nodeSelections: Ref<string[]> = ref([])
 const selectedNodeEdges: Ref<string[]> = ref([])
+const edgeSelections: Ref<string[]> = ref([])
 
-export function useNodeSelection() {
+export function useSelection() {
   function getNodeSelection() {
     return nodeSelections.value
+  }
+
+  function getEdgeSelection() {
+    return edgeSelections.value
   }
 
   function getSelectedNodeEdges() {
@@ -16,6 +21,12 @@ export function useNodeSelection() {
   function setNodeSelection(id: string) {
     if (!nodeSelections.value.includes(id)) {
       nodeSelections.value.push(id)
+    }
+  }
+
+  function setEdgeSelection(id: string) {
+    if (!edgeSelections.value.includes(id)) {
+      edgeSelections.value.push(id)
     }
   }
 
@@ -30,17 +41,28 @@ export function useNodeSelection() {
     }
   }
 
-  function clearNodeSelection() {
+  function removeEdgeSelectionById(id: string) {
+    const index = edgeSelections.value.indexOf(id)
+    if (index != -1) {
+      edgeSelections.value.splice(index, 1)
+    }
+  }
+
+  function clearSelections() {
     nodeSelections.value = []
     selectedNodeEdges.value = []
+    edgeSelections.value = []
   }
 
   return {
     getNodeSelection,
+    getEdgeSelection,
     getSelectedNodeEdges,
     setNodeSelection,
+    setEdgeSelection,
     setSelectedNodeEdges,
     removeNodeSelectionById,
-    clearNodeSelection,
+    removeEdgeSelectionById,
+    clearSelections,
   }
 }

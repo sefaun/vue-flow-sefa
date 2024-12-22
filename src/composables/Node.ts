@@ -6,7 +6,7 @@ import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
 import { nodeEvents } from '@/composables/nodeEvents'
 import { edges, nodes } from '@/composables/store'
-import { useNodeSelection } from '@/composables/NodeSelection'
+import { useSelection } from '@/composables/Selection'
 import { mouseButtons } from '@/composables/enums'
 import { ctrlOrMetaKey } from '@/composables/utils'
 import type {
@@ -20,7 +20,7 @@ import type {
 
 export function useNode(data: TuseNodeOptions) {
   const EE = useEventEmitter().getEventEmitter()
-  const nodeSelection = useNodeSelection()
+  const selection = useSelection()
   const nodeElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TNode> = ref(cloneDeep(data.options))
   const nodeEdges: string[] = []
@@ -69,25 +69,25 @@ export function useNode(data: TuseNodeOptions) {
   }
 
   function edgeMovementOperations() {
-    if (nodeSelection.getNodeSelection().length > 1) {
+    if (selection.getNodeSelection().length > 1) {
       let nodeEdgeIds = []
 
-      for (const id of nodeSelection.getNodeSelection()) {
+      for (const id of selection.getNodeSelection()) {
         nodeEdgeIds.push(...nodes.value[id].getEdges())
       }
 
-      nodeSelection.setSelectedNodeEdges(...new Set(nodeEdgeIds))
+      selection.setSelectedNodeEdges(...new Set(nodeEdgeIds))
     }
   }
 
   function controlNodes(event: MouseEvent) {
-    for (const id of nodeSelection.getNodeSelection().length > 1 ? nodeSelection.getNodeSelection() : [options.value.id]) {
+    for (const id of selection.getNodeSelection().length > 1 ? selection.getNodeSelection() : [options.value.id]) {
       nodes.value[id].nodeMove(event.movementX, event.movementY)
     }
   }
 
   function controlNodeEdges() {
-    for (const id of nodeSelection.getNodeSelection().length > 1 ? nodeSelection.getSelectedNodeEdges() : nodeEdges) {
+    for (const id of selection.getNodeSelection().length > 1 ? selection.getSelectedNodeEdges() : nodeEdges) {
       edges.value[id].setDimension()
     }
   }
@@ -95,25 +95,25 @@ export function useNode(data: TuseNodeOptions) {
   function selectionOperations(event: MouseEvent) {
     if (event.button == mouseButtons.leftButton) {
       if (ctrlOrMetaKey(event)) {
-        if (!nodeSelection.getNodeSelection().includes(options.value.id)) {
-          nodeSelection.setNodeSelection(options.value.id)
+        if (!selection.getNodeSelection().includes(options.value.id)) {
+          selection.setNodeSelection(options.value.id)
         } else {
-          nodeSelection.removeNodeSelectionById(options.value.id)
+          selection.removeNodeSelectionById(options.value.id)
         }
         return
       }
 
       if (!ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
-        nodeSelection.clearNodeSelection()
-        nodeSelection.setNodeSelection(options.value.id)
+        selection.clearSelections()
+        selection.setNodeSelection(options.value.id)
         return
       }
 
       if (ctrlOrMetaKey(event) && !getNodeMoveStatus()) {
-        if (!nodeSelection.getNodeSelection().includes(options.value.id)) {
-          nodeSelection.setNodeSelection(options.value.id)
+        if (!selection.getNodeSelection().includes(options.value.id)) {
+          selection.setNodeSelection(options.value.id)
         } else {
-          nodeSelection.removeNodeSelectionById(options.value.id)
+          selection.removeNodeSelectionById(options.value.id)
         }
         return
       }

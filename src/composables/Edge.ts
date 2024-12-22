@@ -3,22 +3,36 @@ import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
 import { flowRef } from '@/composables/references'
 import { nodes, points } from '@/composables/store'
+import { useSelection } from '@/composables/Selection'
+import { mouseButtons } from '@/composables/enums'
+import { ctrlOrMetaKey } from '@/composables/utils'
 import type { TEdge, TEdgeOptions } from '@/composables/types'
 
 export function useEdge(opts: TEdgeOptions) {
+  const selection = useSelection()
   const edgeElement: Ref<SVGPathElement> = ref()
-  const edgeOptions: Ref<TEdge> = ref(cloneDeep(opts.options))
+  const options: Ref<TEdge> = ref(cloneDeep(opts.options))
 
   function getEdgeOptions() {
-    return edgeOptions.value
+    return options.value
   }
 
   function setEdgeElement(value: SVGPathElement) {
     edgeElement.value = value
   }
 
-  function click(_event: MouseEvent) {
-    console.log('click')
+  function click(event: MouseEvent) {
+    if (event.button == mouseButtons.leftButton) {
+      if (ctrlOrMetaKey(event)) {
+        if (!selection.getEdgeSelection().includes(options.value.id)) {
+          selection.setEdgeSelection(options.value.id)
+        } else {
+          selection.removeEdgeSelectionById(options.value.id)
+        }
+      } else {
+        selection.setEdgeSelection(options.value.id)
+      }
+    }
   }
 
   function contextMenu(_event: MouseEvent) {
@@ -26,8 +40,8 @@ export function useEdge(opts: TEdgeOptions) {
   }
 
   function setDimension() {
-    const start = points.value[edgeOptions.value.start.pointId]
-    const end = points.value[edgeOptions.value.end.pointId]
+    const start = points.value[options.value.start.pointId]
+    const end = points.value[options.value.end.pointId]
 
     if (start && end) {
       const flowBounding = flowRef.value.getBoundingClientRect()
@@ -47,16 +61,16 @@ export function useEdge(opts: TEdgeOptions) {
 
   function start() {
     setDimension()
-    nodes.value[edgeOptions.value.start.nodeId].setEdge(edgeOptions.value.id)
-    nodes.value[edgeOptions.value.end.nodeId].setEdge(edgeOptions.value.id)
+    nodes.value[options.value.start.nodeId].setEdge(options.value.id)
+    nodes.value[options.value.end.nodeId].setEdge(options.value.id)
   }
 
   function destroy() {
-    if (nodes.value[edgeOptions.value.start.nodeId]) {
-      nodes.value[edgeOptions.value.start.nodeId].removeEdge(edgeOptions.value.id)
+    if (nodes.value[options.value.start.nodeId]) {
+      nodes.value[options.value.start.nodeId].removeEdge(options.value.id)
     }
-    if (nodes.value[edgeOptions.value.end.nodeId]) {
-      nodes.value[edgeOptions.value.end.nodeId].removeEdge(edgeOptions.value.id)
+    if (nodes.value[options.value.end.nodeId]) {
+      nodes.value[options.value.end.nodeId].removeEdge(options.value.id)
     }
   }
 

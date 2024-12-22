@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash'
 import { edgeDrawingRef, containerRef, flowRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
@@ -89,7 +88,7 @@ export function useEdgeCreator() {
     }
 
     const edgeData = {
-      id: v4(),
+      id: crypto.randomUUID(),
       start: {
         nodeId: points.value.start.nodeId,
         pointId: points.value.start.id,

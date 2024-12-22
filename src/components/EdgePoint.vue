@@ -15,7 +15,6 @@
 <script setup lang="ts">
 import type { PropType, CSSProperties } from 'vue'
 import { onMounted, onBeforeUnmount, ref, inject } from 'vue'
-import { v4 } from 'uuid'
 import { points } from '@/composables/store'
 import { useEdgePoint } from '@/composables/EdgePoint'
 import type { TEdgePointTypeValues } from '@/composables/types'
@@ -63,7 +62,7 @@ const props = defineProps({
 })
 
 const nodeId = inject(NodeId)
-const id = ref(props.id || v4())
+const id = ref(props.id || crypto.randomUUID())
 const pointRef = ref()
 const edgePoint = useEdgePoint({
   id: id.value,

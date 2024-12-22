@@ -1,16 +1,16 @@
 import { nextTick } from 'vue'
 import { useFlow } from '@/composables/Flow'
-import { useNodeSelection } from '@/composables/NodeSelection'
+import { useSelection } from '@/composables/Selection'
 import { nodes } from '@/composables/store'
 
 const flow = useFlow()
-const nodeSelection = useNodeSelection()
+const selection = useSelection()
 
 export function onBeforeEdgeConnect() {}
 export function onNodeClick() {}
 
 export function removeNodes(ids?: string[]) {
-  const willRemoves: string[] = ids && ids.length ? ids : nodeSelection.getNodeSelection()
+  const willRemoves: string[] = ids && ids.length ? ids : selection.getNodeSelection()
   const nodeEdges: string[] = []
 
   for (const id of willRemoves) {
@@ -29,4 +29,14 @@ export function removeNodes(ids?: string[]) {
     const newNodes = flow.getNodes().filter((item) => !willRemoves.includes(item.id))
     flow.setNodes(newNodes)
   })
+
+  selection.clearSelections()
+}
+
+export function removeEdges(ids?: string[]) {
+  console.log(selection.getEdgeSelection())
+  const willRemoves: string[] = ids && ids.length ? ids : selection.getEdgeSelection()
+  const newEdges = flow.getEdges().filter((item) => !willRemoves.includes(item.id))
+  flow.setEdges(newEdges)
+  selection.clearSelections()
 }

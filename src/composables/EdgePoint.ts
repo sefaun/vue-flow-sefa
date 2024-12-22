@@ -2,12 +2,12 @@ import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
 import { useEdgeCreator } from '@/composables/EdgeCreator'
-import { useNodeSelection } from '@/composables/NodeSelection'
+import { useSelection } from '@/composables/Selection'
 import type { TuseEdgePointOptions } from '@/composables/types'
 
 export function useEdgePoint(data: TuseEdgePointOptions) {
   const edgeCreator = useEdgeCreator()
-  const nodeSelection = useNodeSelection()
+  const selection = useSelection()
   const edgePointElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TuseEdgePointOptions> = ref(cloneDeep(data))
 
@@ -24,7 +24,7 @@ export function useEdgePoint(data: TuseEdgePointOptions) {
   }
 
   function mouseDown(event: MouseEvent) {
-    nodeSelection.clearNodeSelection()
+    selection.clearSelections()
     edgeCreator.start()
     edgeCreator.startDrawing(event, {
       ref: edgePointElement.value,
