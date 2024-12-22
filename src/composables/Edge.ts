@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { cloneDeep } from 'lodash'
+import { flowRef } from '@/composables/references'
 import { nodes, points } from '@/composables/store'
 import type { TEdge, TEdgeOptions } from '@/composables/types'
 
@@ -29,12 +30,13 @@ export function useEdge(opts: TEdgeOptions) {
     const end = points.value[edgeOptions.value.end.pointId]
 
     if (start && end) {
+      const flowBounding = flowRef.value.getBoundingClientRect()
       const startBounding = start.getBoundingClientRect()
       const endBounding = end.getBoundingClientRect()
-      const startX = startBounding.left + startBounding.width / 2
-      const startY = startBounding.top + startBounding.height / 2
-      const endX = endBounding.left + endBounding.width / 2
-      const endY = endBounding.top + endBounding.height / 2
+      const startX = startBounding.left - flowBounding.left + startBounding.width / 2
+      const startY = startBounding.top - flowBounding.top + startBounding.height / 2
+      const endX = endBounding.left - flowBounding.left + endBounding.width / 2
+      const endY = endBounding.top - flowBounding.top + endBounding.height / 2
 
       edgeElement.value.setAttribute(
         'd',

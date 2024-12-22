@@ -1,11 +1,10 @@
 import { ref } from 'vue'
 import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash'
-import { edgeDrawingRef, containerRef } from '@/composables/references'
+import { edgeDrawingRef, containerRef, flowRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { emitterEvents } from '@/composables/emitterEvents'
-import { nodes } from '@/composables/store'
 import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 
 const startingPoints = {
@@ -32,6 +31,7 @@ const drawingStatus = ref(false)
 export function useEdgeCreator() {
   const flow = useFlow()
   const EE = useEventEmitter().getEventEmitter()
+  let flowBounding: DOMRect = null
   const edgeDrawingData = {
     startX: 0,
     startY: 0,
@@ -54,19 +54,21 @@ export function useEdgeCreator() {
     }
 
     setDrawingStatus(true)
+    flowBounding = flowRef.value.getBoundingClientRect()
     const bounding = points.value.start.ref.getBoundingClientRect()
-    edgeDrawingData.startX = bounding.left + bounding.width / 2
-    edgeDrawingData.startY = bounding.top + bounding.height / 2
-    edgeDrawingData.mouseMoveX = event.clientX
-    edgeDrawingData.mouseMoveY = event.clientY
+
+    edgeDrawingData.startX = bounding.left - flowBounding.left + bounding.width / 2
+    edgeDrawingData.startY = bounding.top - flowBounding.top + bounding.height / 2
+    edgeDrawingData.mouseMoveX = event.clientX - flowBounding.left
+    edgeDrawingData.mouseMoveY = event.clientY - flowBounding.top
     setDimensionAttribute(edgeDrawingData)
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
 
   function mouseMove(event: MouseEvent) {
     event.preventDefault()
-    edgeDrawingData.mouseMoveX = event.clientX
-    edgeDrawingData.mouseMoveY = event.clientY
+    edgeDrawingData.mouseMoveX = event.clientX - flowBounding.left
+    edgeDrawingData.mouseMoveY = event.clientY - flowBounding.top
     setDimensionAttribute(edgeDrawingData)
   }
 
@@ -98,9 +100,6 @@ export function useEdgeCreator() {
       },
     }
     flow.getEdges().push(edgeData)
-
-    nodes.value[points.value.start.nodeId].setEdge(edgeData.id)
-    nodes.value[points.value.end.nodeId].setEdge(edgeData.id)
   }
 
   function setDrawingStatus(value: boolean) {

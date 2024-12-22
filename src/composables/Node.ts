@@ -43,7 +43,9 @@ export function useNode(data: TuseNodeOptions) {
   }
 
   function setEdge(id: string) {
-    nodeEdges.push(id)
+    if (!nodeEdges.includes(id)) {
+      nodeEdges.push(id)
+    }
   }
 
   function setNodeMoveStatus(value: boolean) {
