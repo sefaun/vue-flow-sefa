@@ -1,24 +1,27 @@
 <template>
   <div
     ref="pointRef"
-    class="relative cursor-crosshair"
+    class="relative"
     :id="id"
     @mousedown.stop.left="edgePoint.mouseDown"
     @mouseup.stop.left="edgePoint.mouseUp"
   >
-    <div :style="props.style">
+    <div v-if="hasSlot">
       <slot></slot>
     </div>
+    <div v-else :style="props.style"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { PropType, CSSProperties } from 'vue'
-import { onMounted, onBeforeUnmount, ref, inject } from 'vue'
+import { onMounted, onBeforeUnmount, ref, inject, useSlots, computed } from 'vue'
 import { points } from '@/composables/store'
 import { useEdgePoint } from '@/composables/EdgePoint'
 import type { TEdgePointTypeValues } from '@/composables/types'
 import { NodeId } from '@/context/index'
+
+const slots = useSlots()
 
 const props = defineProps({
   id: {
@@ -57,9 +60,12 @@ const props = defineProps({
       border: '1px solid black',
       backgroundColor: 'white',
       borderRadius: '50%',
+      cursor: 'crosshair',
     },
   },
 })
+
+const hasSlot = computed(() => !!slots.default)
 
 const nodeId = inject(NodeId)
 const id = ref(props.id || crypto.randomUUID())

@@ -5,5 +5,4 @@
 - nodeların boyut değişiminde bağlantıları render edilecek.
 - zoom-fit yapılacak.
 - kademeli yakınlaştır ve uzaklaştır özelliği eklenecek( + | - ).
-- edgepointlerin slotu varsa varsayılan css'ler iptal edilecek.
-- 
+-
