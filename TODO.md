@@ -1,3 +1,9 @@
 - önceden aynı outputtan aynı inputa yapılmış bağlantı varsa yenisini bağlama.
 - pointlere bağlantı adedi limiti ekle.
--
+- background için tasarım eklenecek ve zooma uygun olarak çalışacak.
+- svg'lerin curve kısımları düzeltilecek.
+- nodeların boyut değişiminde bağlantıları render edilecek.
+- zoom-fit yapılacak.
+- kademeli yakınlaştır ve uzaklaştır özelliği eklenecek( + | - ).
+- edgepointlerin slotu varsa varsayılan css'ler iptal edilecek.
+- 
