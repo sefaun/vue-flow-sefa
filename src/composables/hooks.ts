@@ -1,10 +1,12 @@
 import { nextTick } from 'vue'
 import { useFlow } from '@/composables/Flow'
+import { useFlowController } from '@/composables/FlowController'
 import { useSelection } from '@/composables/Selection'
 import { nodes } from '@/composables/store'
 
 const flow = useFlow()
 const selection = useSelection()
+const flowController = useFlowController()
 
 export function onBeforeEdgeConnect() {}
 export function onNodeClick() {}
@@ -40,3 +42,19 @@ export function removeEdges(ids?: string[]) {
   flow.setEdges(newEdges)
   selection.clearSelections()
 }
+
+export function zoomIn() {
+  flowController.setMatrix({
+    z: flowController.getCorrectZoom(flowController.getMatrix().z + 0.1),
+  })
+  flowController.renderMatrix(flowController.getMatrix())
+}
+
+export function zoomOut() {
+  flowController.setMatrix({
+    z: flowController.getCorrectZoom(flowController.getMatrix().z - 0.1),
+  })
+  flowController.renderMatrix(flowController.getMatrix())
+}
+
+export function zoomFit() {}

@@ -3,5 +3,4 @@
 - background için tasarım eklenecek ve zooma uygun olarak çalışacak.
 - svg'lerin curve kısımları düzeltilecek.
 - zoom-fit yapılacak.
-- kademeli yakınlaştır ve uzaklaştır özelliği eklenecek( + | - ).
--
+- svg özelleştirme eklenecek. ucu, arkası, rengi vs.

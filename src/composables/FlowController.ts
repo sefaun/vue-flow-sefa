@@ -9,6 +9,10 @@ const matrix = ref({
 })
 
 export function useFlowController() {
+  const zoomLimits = {
+    min: 0.2,
+    max: 2.5,
+  } as const
   let rect: DOMRect = null
   let mouseX: number = 0
   let mouseY: number = 0
@@ -24,6 +28,34 @@ export function useFlowController() {
     return value / matrix.value.z
   }
 
+  function checkCorrectZoom(value: number): boolean {
+    if (value > zoomLimits.max) {
+      return false
+    }
+
+    if (value < zoomLimits.min) {
+      return false
+    }
+
+    return true
+  }
+
+  function getCorrectZoom(value: number): number {
+    if (value > zoomLimits.max) {
+      return zoomLimits.max
+    }
+
+    if (value < zoomLimits.min) {
+      return zoomLimits.min
+    }
+
+    return value
+  }
+
+  function setMatrix(value: Partial<typeof matrix.value>) {
+    matrix.value = Object.assign(matrix.value, value)
+  }
+
   function mouseDown(_event: MouseEvent) {
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
@@ -37,11 +69,15 @@ export function useFlowController() {
     activeStyles()
     matrix.value.x = event.movementX + matrix.value.x
     matrix.value.y = event.movementY + matrix.value.y
-    flowTransformer(matrix.value)
+    renderMatrix(matrix.value)
   }
 
   function wheel(event: WheelEvent) {
     scale = event.deltaY > 0 ? 0.9 : 1.1
+    if (!checkCorrectZoom(matrix.value.z * scale)) {
+      return
+    }
+
     rect = flowRef.value.getBoundingClientRect()
 
     mouseX = event.clientX - rect.left
@@ -54,16 +90,19 @@ export function useFlowController() {
     matrix.value.y = matrix.value.y + (mouseY - groundCenterY) * (1 - scale)
     matrix.value.z = matrix.value.z * scale
 
-    flowTransformer(matrix.value)
+    renderMatrix(matrix.value)
   }
 
-  function flowTransformer(value: typeof matrix.value) {
+  function renderMatrix(value: typeof matrix.value) {
     flowRef.value.style.transform = `matrix(${value.z}, 0, 0, ${value.z}, ${value.x}, ${value.y})`
   }
 
   return {
+    getCorrectZoom,
     getMatrix,
     getRealValue,
+    setMatrix,
+    renderMatrix,
     mouseDown,
     mouseUp,
     wheel,
