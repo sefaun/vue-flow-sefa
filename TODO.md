@@ -2,7 +2,6 @@
 - pointlere bağlantı adedi limiti ekle.
 - background için tasarım eklenecek ve zooma uygun olarak çalışacak.
 - svg'lerin curve kısımları düzeltilecek.
-- nodeların boyut değişiminde bağlantıları render edilecek.
 - zoom-fit yapılacak.
 - kademeli yakınlaştır ve uzaklaştır özelliği eklenecek( + | - ).
 -

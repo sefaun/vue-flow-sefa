@@ -26,6 +26,7 @@ export function useNode(data: TuseNodeOptions) {
   const nodeElement: Ref<HTMLDivElement> = ref()
   const options: Ref<TNode> = ref(cloneDeep(data.options))
   const nodeEdges: string[] = []
+  let mutationObserver: MutationObserver = null
   let nodeMoveStatus = false
 
   function getNodeOptions() {
@@ -132,7 +133,6 @@ export function useNode(data: TuseNodeOptions) {
     event.preventDefault()
     setNodeMoveStatus(true)
     controlNodes(event)
-    controlNodeEdges()
   }
 
   function mouseUp(event: MouseEvent) {
@@ -173,6 +173,22 @@ export function useNode(data: TuseNodeOptions) {
     }
   }
 
+  function startMutationObserver() {
+    mutationObserver = new MutationObserver((_mutations, _observer) => {
+      controlNodeEdges()
+    })
+
+    mutationObserver.observe(nodeElement.value, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    })
+  }
+
+  function destroyMutationObserver() {
+    mutationObserver.disconnect()
+  }
+
   function startEmitterListener() {
     EE.on(emitterEvents.container.groundMouseUp, groundMouseUp)
     EE.on(emitterEvents.node.mouseDown, mouseDownEvent)
@@ -185,10 +201,12 @@ export function useNode(data: TuseNodeOptions) {
 
   function start() {
     startEmitterListener()
+    startMutationObserver()
   }
 
   function destroy() {
     destroyEmitterListener()
+    destroyMutationObserver()
   }
 
   return {
