@@ -1,8 +1,8 @@
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { containerRef, flowRef } from '@/composables/references'
 import { activeStyles, passiveStyles } from '@/composables/controller'
 
-const matrix = reactive({
+const matrix = ref({
   x: 0,
   y: 0,
   z: 1,
@@ -16,6 +16,14 @@ export function useFlowController() {
   let groundCenterY: number = 0
   let scale: number = 0
 
+  function getMatrix() {
+    return matrix.value
+  }
+
+  function getRealValue(value: number): number {
+    return value / matrix.value.z
+  }
+
   function mouseDown(_event: MouseEvent) {
     containerRef.value.addEventListener('mousemove', mouseMove)
   }
@@ -27,9 +35,9 @@ export function useFlowController() {
 
   function mouseMove(event: MouseEvent) {
     activeStyles()
-    matrix.x = event.movementX + matrix.x
-    matrix.y = event.movementY + matrix.y
-    flowTransformer(matrix)
+    matrix.value.x = event.movementX + matrix.value.x
+    matrix.value.y = event.movementY + matrix.value.y
+    flowTransformer(matrix.value)
   }
 
   function wheel(event: WheelEvent) {
@@ -42,22 +50,19 @@ export function useFlowController() {
     groundCenterX = rect.width / 2
     groundCenterY = rect.height / 2
 
-    matrix.x = matrix.x + (mouseX - groundCenterX) * (1 - scale)
-    matrix.y = matrix.y + (mouseY - groundCenterY) * (1 - scale)
-    matrix.z = matrix.z * scale
+    matrix.value.x = matrix.value.x + (mouseX - groundCenterX) * (1 - scale)
+    matrix.value.y = matrix.value.y + (mouseY - groundCenterY) * (1 - scale)
+    matrix.value.z = matrix.value.z * scale
 
-    flowTransformer(matrix)
+    flowTransformer(matrix.value)
   }
 
-  function flowTransformer(value: typeof matrix) {
+  function flowTransformer(value: typeof matrix.value) {
     flowRef.value.style.transform = `matrix(${value.z}, 0, 0, ${value.z}, ${value.x}, ${value.y})`
   }
 
-  function getRealValue(value: number): number {
-    return value / matrix.z
-  }
-
   return {
+    getMatrix,
     getRealValue,
     mouseDown,
     mouseUp,

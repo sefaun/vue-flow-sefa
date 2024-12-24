@@ -8,7 +8,7 @@
     <svg class="absolute w-full h-full left-0 top-0 overflow-visible pointer-events-none">
       <defs>
         <marker
-          id="thinker-arrow-end"
+          id="arrow-end"
           class="stroke-[green] fill-[green] stroke-[3]"
           markerWidth="5"
           markerHeight="5"
@@ -21,7 +21,7 @@
           <polygon points="-2,0 -5,5 5,0 -5,-5"></polygon>
         </marker>
         <marker
-          id="thinker-drawing-end"
+          id="drawing-end"
           class="stroke-[green] fill-[green] stroke-[3]"
           markerWidth="5"
           markerHeight="5"
@@ -40,7 +40,7 @@
         class="fill-none stroke-[4] stroke-[green]"
         d="M 0,0 C 0,0 0,0 0,0"
         stroke-dasharray="15,5"
-        marker-end="url(#thinker-drawing-end)"
+        marker-end="url(#drawing-end)"
       ></path>
       <g v-for="edge of flow.getEdges()" :key="edge.id" class="pointer-events-none">
         <slot name="edge" v-bind="{ data: edge }"></slot>

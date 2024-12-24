@@ -3,7 +3,7 @@
     ref="edgeRef"
     class="fill-none stroke-[4] stroke-[green] hover:stroke-[6] hover:cursor-pointer pointer-events-auto"
     stroke-dasharray="15,5"
-    marker-end="url(#thinker-arrow-end)"
+    marker-end="url(#arrow-end)"
     :id="props.data.id"
     @click.stop.left="edge.click"
     @contextmenu.prevent.stop="edge.contextMenu"
