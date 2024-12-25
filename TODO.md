@@ -1,6 +1,5 @@
-- önceden aynı outputtan aynı inputa yapılmış bağlantı varsa yenisini bağlama.
-- pointlere bağlantı adedi limiti ekle.
-- background için tasarım eklenecek ve zooma uygun olarak çalışacak.
-- svg'lerin curve kısımları düzeltilecek.
 - zoom-fit yapılacak.
+- pointlere bağlantı adedi limiti ekle.
+- svg'lerin curve kısımları düzeltilecek.
 - svg özelleştirme eklenecek. ucu, arkası, rengi vs.
+- background için tasarım eklenecek ve zooma uygun olarak çalışacak.

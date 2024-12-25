@@ -5,7 +5,8 @@ import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { useFlowController } from '@/composables/FlowController'
 import { emitterEvents } from '@/composables/events'
-import type { TuseEdgeCreatorEdgeOptions } from '@/composables/types'
+import type { TEdge, TuseEdgeCreatorEdgeOptions } from '@/composables/types'
+import { edges, nodes } from './store'
 
 const startingPoints = {
   start: {
@@ -102,7 +103,35 @@ export function useEdgeCreator() {
         pointId: points.value.end.id,
       },
     }
+
+    if (
+      !checkMultipleConnectionForSamePoint(edgeData, [
+        ...new Set([...nodes.value[edgeData.start.nodeId].getEdges(), ...nodes.value[edgeData.end.nodeId].getEdges()]),
+      ])
+    ) {
+      console.log(12)
+      return
+    }
+    console.log(22)
+
     flow.getEdges().push(edgeData)
+  }
+
+  function checkMultipleConnectionForSamePoint(newEdge: TEdge, ids: string[]): boolean {
+    for (const id of ids) {
+      const edge = edges.value[id].getEdgeOptions()
+
+      if (
+        edge.start.nodeId == newEdge.start.nodeId &&
+        edge.start.pointId == newEdge.start.pointId &&
+        edge.end.nodeId == newEdge.end.nodeId &&
+        edge.end.pointId == newEdge.end.pointId
+      ) {
+        return false
+      }
+    }
+
+    return true
   }
 
   function setDrawingStatus(value: boolean) {
