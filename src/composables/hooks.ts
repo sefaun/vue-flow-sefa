@@ -36,7 +36,6 @@ export function removeNodes(ids?: string[]) {
 }
 
 export function removeEdges(ids?: string[]) {
-  console.log(selection.getEdgeSelection())
   const willRemoves: string[] = ids && ids.length ? ids : selection.getEdgeSelection()
   const newEdges = flow.getEdges().filter((item) => !willRemoves.includes(item.id))
   flow.setEdges(newEdges)

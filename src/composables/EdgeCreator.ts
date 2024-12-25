@@ -4,9 +4,9 @@ import { edgeDrawingRef, containerRef, flowRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEventEmitter } from '@/composables/EventEmitter'
 import { useFlowController } from '@/composables/FlowController'
+import { edges, nodes, points } from '@/composables/store'
 import { emitterEvents } from '@/composables/events'
 import type { TEdge, TuseEdgeCreatorEdgeOptions } from '@/composables/types'
-import { edges, nodes } from './store'
 
 const startingPoints = {
   start: {
@@ -26,7 +26,7 @@ const startingPoints = {
     ref: null,
   } as TuseEdgeCreatorEdgeOptions,
 }
-const points = ref(cloneDeep(startingPoints))
+const edgePoints = ref(cloneDeep(startingPoints))
 const drawingStatus = ref(false)
 
 export function useEdgeCreator() {
@@ -42,7 +42,7 @@ export function useEdgeCreator() {
   }
 
   function getPoints() {
-    return points.value
+    return edgePoints.value
   }
 
   function getDrawingStatus() {
@@ -50,14 +50,14 @@ export function useEdgeCreator() {
   }
 
   function startDrawing(event: MouseEvent, value: TuseEdgeCreatorEdgeOptions) {
-    points.value.start = cloneDeep(value)
-    if (!points.value.start.outgoingConnection) {
+    edgePoints.value.start = cloneDeep(value)
+    if (!edgePoints.value.start.outgoingConnection) {
       return
     }
 
     setDrawingStatus(true)
     flowBounding = flowRef.value.getBoundingClientRect()
-    const bounding = points.value.start.ref.getBoundingClientRect()
+    const bounding = edgePoints.value.start.ref.getBoundingClientRect()
 
     edgeDrawingData.startX = flowController.getRealValue(bounding.left - flowBounding.left + bounding.width / 2)
     edgeDrawingData.startY = flowController.getRealValue(bounding.top - flowBounding.top + bounding.height / 2)
@@ -82,25 +82,25 @@ export function useEdgeCreator() {
     }
 
     commonMouseUp()
-    points.value.end = cloneDeep(value)
+    edgePoints.value.end = cloneDeep(value)
 
-    if (!points.value.end.incomingConnection) {
+    if (!edgePoints.value.end.incomingConnection) {
       return
     }
 
-    if (points.value.start.id == points.value.end.id) {
+    if (edgePoints.value.start.id == edgePoints.value.end.id) {
       return
     }
 
     const edgeData = {
       id: crypto.randomUUID(),
       start: {
-        nodeId: points.value.start.nodeId,
-        pointId: points.value.start.id,
+        nodeId: edgePoints.value.start.nodeId,
+        pointId: edgePoints.value.start.id,
       },
       end: {
-        nodeId: points.value.end.nodeId,
-        pointId: points.value.end.id,
+        nodeId: edgePoints.value.end.nodeId,
+        pointId: edgePoints.value.end.id,
       },
     }
 
@@ -109,12 +109,36 @@ export function useEdgeCreator() {
         ...new Set([...nodes.value[edgeData.start.nodeId].getEdges(), ...nodes.value[edgeData.end.nodeId].getEdges()]),
       ])
     ) {
-      console.log(12)
       return
     }
-    console.log(22)
+
+    if (!checkPointConnectionLimits(edgeData)) {
+      return
+    }
 
     flow.getEdges().push(edgeData)
+  }
+
+  function checkPointConnectionLimits(newEdge: TEdge) {
+    const outgoingLimit = points.value[newEdge.start.pointId].getOptions().outgoingConnectionLimit
+    const incomingLimit = points.value[newEdge.end.pointId].getOptions().incomingConnectionLimit
+    const edgeValues = Object.values(edges.value)
+
+    if (outgoingLimit != -1) {
+      const outgoings = edgeValues.filter((item) => item.getEdgeOptions().start.pointId == newEdge.start.pointId)
+      if (outgoings.length >= outgoingLimit) {
+        return false
+      }
+    }
+
+    if (incomingLimit != -1) {
+      const incomings = edgeValues.filter((item) => item.getEdgeOptions().end.pointId == newEdge.end.pointId)
+      if (incomings.length >= incomingLimit) {
+        return false
+      }
+    }
+
+    return true
   }
 
   function checkMultipleConnectionForSamePoint(newEdge: TEdge, ids: string[]): boolean {
@@ -148,7 +172,7 @@ export function useEdgeCreator() {
   }
 
   function resetPoints() {
-    points.value = cloneDeep(startingPoints)
+    edgePoints.value = cloneDeep(startingPoints)
   }
 
   function commonMouseUp() {

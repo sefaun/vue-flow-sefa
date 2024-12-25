@@ -82,7 +82,7 @@ const edgePoint = useEdgePoint({
 
 onMounted(() => {
   edgePoint.setEdgePointElement(pointRef.value)
-  points.value[id.value] = pointRef.value
+  points.value[id.value] = edgePoint
 })
 
 onBeforeUnmount(() => {

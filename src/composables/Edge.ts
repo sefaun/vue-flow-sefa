@@ -45,8 +45,8 @@ export function useEdge(opts: TEdgeOptions) {
 
     if (start && end) {
       const flowBounding = flowRef.value.getBoundingClientRect()
-      const startBounding = start.getBoundingClientRect()
-      const endBounding = end.getBoundingClientRect()
+      const startBounding = start.getEdgePointElement().getBoundingClientRect()
+      const endBounding = end.getEdgePointElement().getBoundingClientRect()
       const startX = flowController.getRealValue(startBounding.left - flowBounding.left + startBounding.width / 2)
       const startY = flowController.getRealValue(startBounding.top - flowBounding.top + startBounding.height / 2)
       const endX = flowController.getRealValue(endBounding.left - flowBounding.left + endBounding.width / 2)
