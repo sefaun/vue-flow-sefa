@@ -122,19 +122,30 @@ export function useEdgeCreator() {
   function checkPointConnectionLimits(newEdge: TEdge) {
     const outgoingLimit = points.value[newEdge.start.pointId].getOptions().outgoingConnectionLimit
     const incomingLimit = points.value[newEdge.end.pointId].getOptions().incomingConnectionLimit
-    const edgeValues = Object.values(edges.value)
+    let outgoingCounter = 0
+    let incomingCounter = 0
 
     if (outgoingLimit != -1) {
-      const outgoings = edgeValues.filter((item) => item.getEdgeOptions().start.pointId == newEdge.start.pointId)
-      if (outgoings.length >= outgoingLimit) {
-        return false
+      for (const [_, value] of Object.entries(edges.value)) {
+        if (value.getEdgeOptions().start.pointId == newEdge.start.pointId) {
+          outgoingCounter++
+        }
+
+        if (outgoingCounter >= outgoingLimit) {
+          return false
+        }
       }
     }
 
     if (incomingLimit != -1) {
-      const incomings = edgeValues.filter((item) => item.getEdgeOptions().end.pointId == newEdge.end.pointId)
-      if (incomings.length >= incomingLimit) {
-        return false
+      for (const [_, value] of Object.entries(edges.value)) {
+        if (value.getEdgeOptions().end.pointId == newEdge.end.pointId) {
+          incomingCounter++
+        }
+
+        if (incomingCounter >= incomingLimit) {
+          return false
+        }
       }
     }
 
