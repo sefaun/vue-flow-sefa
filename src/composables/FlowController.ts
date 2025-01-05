@@ -13,12 +13,6 @@ export function useFlowController() {
     min: 0.2,
     max: 2.5,
   } as const
-  let rect: DOMRect = null
-  let mouseX: number = 0
-  let mouseY: number = 0
-  let groundCenterX: number = 0
-  let groundCenterY: number = 0
-  let scale: number = 0
 
   function getMatrix() {
     return matrix.value
@@ -26,18 +20,6 @@ export function useFlowController() {
 
   function getRealValue(value: number): number {
     return value / matrix.value.z
-  }
-
-  function checkCorrectZoom(value: number): boolean {
-    if (value > zoomLimits.max) {
-      return false
-    }
-
-    if (value < zoomLimits.min) {
-      return false
-    }
-
-    return true
   }
 
   function getCorrectZoom(value: number): number {
@@ -53,6 +35,10 @@ export function useFlowController() {
   }
 
   function setMatrix(value: Partial<typeof matrix.value>) {
+    if (value.hasOwnProperty('z')) {
+      value.z = Number(value.z.toFixed(2))
+    }
+
     matrix.value = Object.assign(matrix.value, value)
   }
 
@@ -67,29 +53,40 @@ export function useFlowController() {
 
   function mouseMove(event: MouseEvent) {
     activeStyles()
-    matrix.value.x = event.movementX + matrix.value.x
-    matrix.value.y = event.movementY + matrix.value.y
+    const { x, y } = getMatrix()
+    setMatrix({
+      x: event.movementX + x,
+      y: event.movementY + y,
+    })
     renderMatrix(matrix.value)
   }
 
-  function wheel(event: WheelEvent) {
-    scale = event.deltaY > 0 ? 0.9 : 1.1
-    if (!checkCorrectZoom(matrix.value.z * scale)) {
-      return
+  function centerZoom(deltaY: number, centerX: number, centerY: number) {
+    const scale = deltaY > 0 ? 0.9 : 1.1
+    const flow = flowRef.value.getBoundingClientRect()
+
+    const mouseX = centerX - flow.left
+    const mouseY = centerY - flow.top
+
+    const groundCenterX = flow.width / 2
+    const groundCenterY = flow.height / 2
+
+    return {
+      scale,
+      groundCenterX: mouseX - groundCenterX,
+      groundCenterY: mouseY - groundCenterY,
     }
+  }
 
-    rect = flowRef.value.getBoundingClientRect()
+  function wheel(event: WheelEvent) {
+    const { scale, groundCenterX, groundCenterY } = centerZoom(event.deltaY, event.clientX, event.clientY)
+    const { x, y, z } = getMatrix()
 
-    mouseX = event.clientX - rect.left
-    mouseY = event.clientY - rect.top
-
-    groundCenterX = rect.width / 2
-    groundCenterY = rect.height / 2
-
-    matrix.value.x = matrix.value.x + (mouseX - groundCenterX) * (1 - scale)
-    matrix.value.y = matrix.value.y + (mouseY - groundCenterY) * (1 - scale)
-    matrix.value.z = matrix.value.z * scale
-
+    setMatrix({
+      x: x + groundCenterX * (1 - scale),
+      y: y + groundCenterY * (1 - scale),
+      z: z * scale,
+    })
     renderMatrix(matrix.value)
   }
 
@@ -101,6 +98,7 @@ export function useFlowController() {
     getCorrectZoom,
     getMatrix,
     getRealValue,
+    centerZoom,
     setMatrix,
     renderMatrix,
     mouseDown,

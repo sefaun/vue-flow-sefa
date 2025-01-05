@@ -4,6 +4,7 @@
     <button @click="removeEdges()" class="bg-red-200 ml-1">edge remove</button>
     <button @click="zoomIn()" class="bg-red-200 text-[16px] font-bold ml-1 px-1">+</button>
     <button @click="zoomOut()" class="bg-red-200 text-[16px] font-bold ml-1 px-1">-</button>
+    <button @click="zoomFit()" class="bg-red-200 text-[16px] font-bold ml-1 px-1">[ ]</button>
   </div>
   <Container :class="'w-full h-screen bg-slate-400'">
     <Flow :nodes="nodes" :edges="edges">
@@ -25,7 +26,7 @@ import Container from '@/components/Container.vue'
 import Flow from '@/components/Flow.vue'
 import Edge from '@/components/Edge.vue'
 import { TNode, TEdge } from '@/composables/types'
-import { removeNodes, removeEdges, zoomIn, zoomOut } from '@/composables/hooks'
+import { removeNodes, removeEdges, zoomIn, zoomOut, zoomFit } from '@/composables/hooks'
 import NodeA from './NodeA.vue'
 import NodeB from './NodeB.vue'
 

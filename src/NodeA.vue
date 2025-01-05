@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute w-[200px] h-[200px] bg-red-500">
+  <div class="w-[200px] h-[200px] bg-red-500">
     <div class="flex">
       <div>
         <EdgePoint type="input" :outgoing-connection="false" :incoming-connection-limit="1"></EdgePoint>
