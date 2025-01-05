@@ -1,8 +1,12 @@
 {
   "name": "flow",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": {
+    "name": "Sefa UN",
+    "email": "sefaun6654@hotmail.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
