@@ -50,10 +50,11 @@
 </template>
 
 <script setup lang="ts">
-import type { PropType } from 'vue'
+import { onMounted, type PropType } from 'vue'
 import { flowRef, edgeDrawingRef } from '@/composables/references'
 import { useFlow } from '@/composables/Flow'
 import { useEdgeCreator } from '@/composables/EdgeCreator'
+import { zoomFit } from '@/composables/hooks'
 import type { TFlowPlaneValues, TNode } from '@/composables/types'
 import Node from '@/components/Node.vue'
 
@@ -73,6 +74,11 @@ const props = defineProps({
     default: 'horizontal',
     required: false,
   },
+  fitView: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 })
 
 const flow = useFlow()
@@ -80,4 +86,14 @@ const edgeCreator = useEdgeCreator()
 
 flow.setNodes(props.nodes)
 flow.setEdges(props.edges)
+flow.setFlowOptions({
+  plane: props.plane,
+  fitView: props.fitView,
+})
+
+onMounted(() => {
+  if (props.fitView) {
+    zoomFit()
+  }
+})
 </script>

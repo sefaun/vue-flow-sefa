@@ -5,12 +5,14 @@ import { flowRef } from '@/composables/references'
 import { nodes, points } from '@/composables/store'
 import { useSelection } from '@/composables/Selection'
 import { useFlowController } from '@/composables/FlowController'
+import { useEdgeDimension } from '@/composables/EdgeDimension'
 import { ctrlOrMetaKey } from '@/composables/utils'
 import type { TEdge, TEdgeOptions } from '@/composables/types'
 
 export function useEdge(opts: TEdgeOptions) {
   const selection = useSelection()
   const flowController = useFlowController()
+  const edgeDimension = useEdgeDimension()
   const edgeElement: Ref<SVGPathElement> = ref()
   const options: Ref<TEdge> = ref(cloneDeep(opts.options))
 
@@ -54,7 +56,12 @@ export function useEdge(opts: TEdgeOptions) {
 
       edgeElement.value.setAttribute(
         'd',
-        `M ${startX},${startY} C ${startX + 200},${startY} ${endX - 200},${endY} ${endX},${endY}`
+        edgeDimension.bezierCurve(start.getOptions().type, {
+          x1: startX,
+          y1: startY,
+          x2: endX,
+          y2: endY,
+        })
       )
     }
   }

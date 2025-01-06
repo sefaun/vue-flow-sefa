@@ -6,7 +6,8 @@ import { useEventEmitter } from '@/composables/EventEmitter'
 import { useFlowController } from '@/composables/FlowController'
 import { edges, nodes, points } from '@/composables/store'
 import { emitterEvents } from '@/composables/events'
-import type { TEdge, TuseEdgeCreatorEdgeOptions } from '@/composables/types'
+import { useEdgeDimension } from '@/composables/EdgeDimension'
+import type { TEdge, TEdgePointTypeValues, TuseEdgeCreatorEdgeOptions } from '@/composables/types'
 
 const startingPoints = {
   start: {
@@ -32,9 +33,11 @@ const drawingStatus = ref(false)
 export function useEdgeCreator() {
   const flow = useFlow()
   const flowController = useFlowController()
+  const edgeDimension = useEdgeDimension()
   const EE = useEventEmitter().getEventEmitter()
   let flowBounding: DOMRect = null
   const edgeDrawingData = {
+    type: null as TEdgePointTypeValues,
     startX: 0,
     startY: 0,
     mouseMoveX: 0,
@@ -63,6 +66,7 @@ export function useEdgeCreator() {
     edgeDrawingData.startY = flowController.getRealValue(bounding.top - flowBounding.top + bounding.height / 2)
     edgeDrawingData.mouseMoveX = flowController.getRealValue(event.clientX - flowBounding.left)
     edgeDrawingData.mouseMoveY = flowController.getRealValue(event.clientY - flowBounding.top)
+    edgeDrawingData.type = value.type
     setDimensionAttribute(edgeDrawingData)
 
     containerRef.value.addEventListener('mousemove', mouseMove)
@@ -176,9 +180,12 @@ export function useEdgeCreator() {
   function setDimensionAttribute(data: typeof edgeDrawingData) {
     edgeDrawingRef.value.setAttribute(
       'd',
-      `M ${data.startX},${data.startY} C ${data.startX + 200},${data.startY} ${data.mouseMoveX - 200},${data.mouseMoveY} ${
-        data.mouseMoveX
-      },${data.mouseMoveY}`
+      edgeDimension.bezierCurve(data.type, {
+        x1: data.startX,
+        y1: data.startY,
+        x2: data.mouseMoveX,
+        y2: data.mouseMoveY,
+      })
     )
   }
 

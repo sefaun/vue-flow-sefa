@@ -2,7 +2,7 @@
   <div class="w-[200px] h-[200px] bg-blue-500">
     <div class="flex">
       <div>
-        <EdgePoint type="input" :outgoing-connection="false" :incoming-connection-limit="1"></EdgePoint>
+        <EdgePoint type="input" :incoming-connection-limit="1"></EdgePoint>
         <EdgePoint type="input" :outgoing-connection="false"></EdgePoint>
       </div>
       <div>{{ props.data.id }}</div>

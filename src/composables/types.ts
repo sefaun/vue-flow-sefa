@@ -12,6 +12,11 @@ export type TEventEmitterOptions = {
 
 export type TFlowPlaneValues = ValueOf<typeof planes>
 
+export type TFlowOptions = {
+  plane: TFlowPlaneValues
+  fitView: boolean
+}
+
 export type TNode = {
   id: string
   type: string
