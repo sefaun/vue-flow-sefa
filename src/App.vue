@@ -7,7 +7,7 @@
     <button @click="zoomFit()" class="bg-red-200 text-[16px] font-bold ml-1 px-1">[ ]</button>
   </div>
   <Container :class="'w-full h-screen bg-slate-400'">
-    <Flow :nodes="nodes" :edges="edges">
+    <Flow :nodes="nodes" :edges="edges" :plane="'horizontal'">
       <template #node="{ data }">
         <NodeA v-if="data.type == 'a'" :data="data"></NodeA>
         <NodeB v-if="data.type == 'b'" :data="data"></NodeB>

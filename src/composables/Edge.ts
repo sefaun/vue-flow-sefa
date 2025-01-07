@@ -56,7 +56,7 @@ export function useEdge(opts: TEdgeOptions) {
 
       edgeElement.value.setAttribute(
         'd',
-        edgeDimension.bezierCurve(start.getOptions().type, {
+        edgeDimension.straightLines(start.getOptions().type, {
           x1: startX,
           y1: startY,
           x2: endX,
