@@ -59,9 +59,15 @@ export function useEdgeDimension() {
   }
 
   function straightLines(type: TEdgePointTypeValues, data: { x1: number; y1: number; x2: number; y2: number }) {
-    straightLinesDComplex =
-      (flow.getFlowOptions().plane == planes.horizontal && data.x2 - data.x1 < straightLinePointsDifference) ||
-      (flow.getFlowOptions().plane == planes.vertical && data.y2 - data.y1 < straightLinePointsDifference)
+    if (type == edgePointType.input) {
+      straightLinesDComplex =
+        (flow.getFlowOptions().plane == planes.horizontal && data.x1 - data.x2 < straightLinePointsDifference) ||
+        (flow.getFlowOptions().plane == planes.vertical && data.y1 - data.y2 < straightLinePointsDifference)
+    } else {
+      straightLinesDComplex =
+        (flow.getFlowOptions().plane == planes.horizontal && data.x2 - data.x1 < straightLinePointsDifference) ||
+        (flow.getFlowOptions().plane == planes.vertical && data.y2 - data.y1 < straightLinePointsDifference)
+    }
 
     straightLinesD.x1 = data.x1
     straightLinesD.y1 = data.y1
@@ -86,7 +92,14 @@ export function useEdgeDimension() {
     } else {
       if (flow.getFlowOptions().plane == planes.horizontal) {
         if (type == edgePointType.input) {
-          //
+          straightLinesD.x2 = data.x1 - straightLinePointsDifference / 2
+          straightLinesD.y2 = data.y1
+          straightLinesD.x3 = straightLinesD.x2
+          straightLinesD.y3 = (data.y2 - data.y1) / 2 + data.y1
+          straightLinesD.x4 = straightLinesD.x6 + straightLinePointsDifference / 2
+          straightLinesD.y4 = straightLinesD.y3
+          straightLinesD.x5 = straightLinesD.x4
+          straightLinesD.y5 = data.y2
         } else {
           straightLinesD.x2 = data.x1 + straightLinePointsDifference / 2
           straightLinesD.y2 = data.y1
@@ -99,7 +112,14 @@ export function useEdgeDimension() {
         }
       } else {
         if (type == edgePointType.input) {
-          //
+          straightLinesD.x2 = data.x1
+          straightLinesD.y2 = data.y1 - straightLinePointsDifference / 2
+          straightLinesD.x3 = (data.x2 - data.x1) / 2 + data.x1
+          straightLinesD.y3 = straightLinesD.y2
+          straightLinesD.x4 = straightLinesD.x3
+          straightLinesD.y4 = straightLinesD.y6 + straightLinePointsDifference / 2
+          straightLinesD.x5 = data.x2
+          straightLinesD.y5 = straightLinesD.y4
         } else {
           straightLinesD.x2 = data.x1
           straightLinesD.y2 = data.y1 + straightLinePointsDifference / 2
