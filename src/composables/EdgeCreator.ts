@@ -180,7 +180,7 @@ export function useEdgeCreator() {
   function setDimensionAttribute(data: typeof edgeDrawingData) {
     edgeDrawingRef.value.setAttribute(
       'd',
-      edgeDimension.straightLines(data.type, {
+      edgeDimension.bezierCurve(data.type, {
         x1: data.startX,
         y1: data.startY,
         x2: data.mouseMoveX,
